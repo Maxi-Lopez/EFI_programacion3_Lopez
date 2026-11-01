@@ -11,7 +11,7 @@ export default function Cargando() {
   }, []);
 
   let mensaje = "Cargando datos";
-  if (seg >= 5) mensaje = "Despertando la API. La primera carga puede tardar hasta un minuto";
+  if (seg >= 5) mensaje = "Despertando la API. La primera carga puede tardar hasta un minuto ya que esta alojada en un servidor gratuito RENDER";
   if (seg >= 75) mensaje = "Está tardando más de lo normal. Si sigue así, recarga la página";
 
   return (

@@ -6,9 +6,15 @@
 }
 
 @theme {
-  --color-ink: #10262b;
-  --color-field: #f1f4f5;
-  --color-line: #dde4e6;
-  --color-brand: #0e7c72;
-  --color-brand-dark: #0a5e56;
+  --color-ink: #0f0f1a;
+  --color-field: #f8fafc;
+  --color-line: #e2e8f0;
+  --color-brand: #7c3aed;
+  --color-brand-dark: #5b21b6;
+  --color-brand-light: #ede9fe;
+  --color-accent: #06b6d4;
+  --color-accent-dark: #0e7490;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
 }

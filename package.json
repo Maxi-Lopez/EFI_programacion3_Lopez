@@ -1,24 +1,36 @@
 {
-  "name": "frontend",
+  "name": "nexusgamer",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.3.3",
+    "@hookform/resolvers": "^3.3.4",
     "next": "16.4.2",
     "postcss": "^8.5.30",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-hook-form": "^7.51.0",
+    "sonner": "^1.4.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/turbopack": "^4",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@vitejs/plugin-react": "^5.2.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
-    "tailwindcss": "^4.3.3"
+    "jsdom": "^24.0.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "vitest": "^1.3.1"
   }
 }
