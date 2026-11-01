@@ -1,24 +1,112 @@
 import { Suspense } from "react";
-import { getProductos, getCategorias, getMarcas, ENDPOINTS } from "@/lib/api";
+import { getProductos, getCategorias, getMarcas } from "@/lib/api";
+import { Card, CardStat, CardGrid } from "@/components/Card";
+import { Boton } from "@/components/Boton";
+import { ProductoForm } from "@/components/ProductoForm";
+import { Modal, ConfirmModal } from "@/components/Modal";
 import Cargando from "@/components/Cargando";
+import ProductoActions from "./ProductoActions";
 
-async function Contenido() {
+async function ProductosContent() {
   const [productos, categorias, marcas] = await Promise.all([
     getProductos().catch(() => []),
     getCategorias().catch(() => []),
     getMarcas().catch(() => []),
   ]);
 
+  const totalProductos = productos.length;
+  const stockBajo = productos.filter((p) => p.stock > 0 && p.stock < 5).length;
+  const sinStock = productos.filter((p) => p.stock === 0).length;
+  const valorInventario = productos.reduce((acc, p) => acc + (p.precio || 0) * (p.stock || 0), 0);
+
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold text-ink mb-2">Productos</h1>
-      <p className="mb-8 text-slate-500">Gestión de inventario</p>
-      <div className="rounded-xl border border-line bg-white p-6 text-center text-slate-500">
-        Próximamente: Tabla de productos con CRUD completo
-        <pre className="mt-4 text-left text-xs bg-field p-4 rounded overflow-auto">
-{JSON.stringify({ productos: productos.length, categorias: categorias.length, marcas: marcas.length }, null, 2)}
-        </pre>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="font-display text-3xl font-semibold text-ink">Productos</h1>
+          <p className="text-slate-500">Gestión de inventario</p>
+        </div>
+        <ProductoActions categorias={categorias} marcas={marcas} mode="create" />
       </div>
+
+      <div className="mb-8">
+        <CardGrid columns={4}>
+          <CardStat label="Total Productos" value={totalProductos} icon="📦" />
+          <CardStat label="Stock Bajo (<5)" value={stockBajo} icon="⚠️" />
+          <CardStat label="Sin Stock" value={sinStock} icon="🚫" />
+          <CardStat label="Valor Inventario" value={`$${valorInventario.toLocaleString()}`} icon="💰" />
+        </CardGrid>
+      </div>
+
+      <Card>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-200 dark:border-slate-700">
+                <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Producto</th>
+                <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Categoría</th>
+                <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Marca</th>
+                <th className="px-4 py-3 text-right font-medium text-slate-500 dark:text-slate-400">Precio</th>
+                <th className="px-4 py-3 text-center font-medium text-slate-500 dark:text-slate-400">Stock</th>
+                <th className="px-4 py-3 text-center font-medium text-slate-500 dark:text-slate-400">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+              {productos.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-slate-500">
+                    No hay productos. Haz clic en Agregar Producto para crear uno.
+                  </td>
+                </tr>
+              ) : (
+                productos.map((producto) => (
+                  <tr key={producto.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        {producto.imagen && (
+                          <img src={producto.imagen} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                        )}
+                        <div>
+                          <p className="font-medium text-slate-900 dark:text-white">{producto.nombre}</p>
+                          {producto.descripcion && (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{producto.descripcion}</p>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
+                      {categorias.find((c) => c.id === producto.categoria)?.nombre || "—"}
+                    </td>
+                    <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
+                      {marcas.find((m) => m.id === producto.marca)?.nombre || "—"}
+                    </td>
+                    <td className="px-4 py-4 text-right font-medium text-slate-900 dark:text-white">
+                      ${Number(producto.precio).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        producto.stock === 0 ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" :
+                        producto.stock < 5 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" :
+                        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                      }`}>
+                        {producto.stock}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <ProductoActions
+                        producto={producto}
+                        categorias={categorias}
+                        marcas={marcas}
+                        mode="edit"
+                      />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
     </div>
   );
 }
@@ -26,7 +114,7 @@ async function Contenido() {
 export default function ProductosPage() {
   return (
     <Suspense fallback={<Cargando />}>
-      <Contenido />
+      <ProductosContent />
     </Suspense>
   );
 }

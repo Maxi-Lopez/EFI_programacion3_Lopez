@@ -4,8 +4,17 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { API_URL, ENDPOINTS, agregarListaDeseos, borrarListaDeseos } from "@/lib/api";
-import { getToken } from "@/lib/auth";
+import { getToken, getTokenPayload } from "@/lib/auth";
 import { loginSchema, productoSchema } from "@/schemas";
+
+async function requireAdmin() {
+  const payload = await getTokenPayload();
+  const isAdmin = payload?.role === "admin" || payload?.is_staff === true;
+  if (!isAdmin) {
+    return { error: "No autorizado: se requiere rol de administrador", status: 403 };
+  }
+  return null;
+}
 
 export async function loginAction(formData) {
   const rawData = {
@@ -54,7 +63,7 @@ export async function loginAction(formData) {
   const payload = access.split(".")[1];
   try {
     const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-    (await cookies()).set("user_data", JSON.stringify({ username: decoded.username, user_id: decoded.user_id }), {
+    (await cookies()).set("user_data", JSON.stringify({ username: decoded.username, user_id: decoded.user_id, role: decoded.role, is_staff: decoded.is_staff }), {
       httpOnly: false,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
@@ -86,6 +95,9 @@ async function llamar(path, opciones = {}) {
 }
 
 export async function crearProductoAction(formData) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
   const rawData = {
     nombre: formData.get("nombre"),
     descripcion: formData.get("descripcion") || "",
@@ -110,7 +122,39 @@ export async function crearProductoAction(formData) {
   return { success: true };
 }
 
+export async function editarProductoAction(formData) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
+  const id = formData.get("id");
+  const rawData = {
+    nombre: formData.get("nombre"),
+    descripcion: formData.get("descripcion") || "",
+    precio: Number(formData.get("precio")),
+    stock: Number(formData.get("stock")),
+    categoria: Number(formData.get("categoria")),
+    marca: Number(formData.get("marca")),
+    imagen: formData.get("imagen") || undefined,
+  };
+
+  const parsed = productoSchema.safeParse(rawData);
+  if (!parsed.success) {
+    return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
+  }
+
+  const res = await llamar(`${ENDPOINTS.write.catalogo.productos}${id}/`, { method: "PUT", body: JSON.stringify(parsed.data) });
+  if (!res) return { error: "Sin conexión con la API" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok) return { error: "No se pudo actualizar. Verifica categoría y marca." };
+
+  revalidatePath("/productos");
+  return { success: true };
+}
+
 export async function borrarProductoAction(formData) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
   const id = formData.get("id");
   const res = await llamar(`${ENDPOINTS.write.catalogo.productos}${id}/`, { method: "DELETE" });
   if (!res) return { error: "Sin conexión" };
