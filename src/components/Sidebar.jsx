@@ -65,7 +65,7 @@ export function Sidebar() {
               className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
             >
               <span>{theme === "light" ? "🌙" : "☀️"}</span>
-              {theme === "light" ? "Modo Oscuro" : "Modo Claro"}
+              {theme === "light" ? "Modo Claro" : "Modo Oscuro"}
             </button>
           )}
 
