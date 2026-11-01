@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { API_URL, ENDPOINTS } from "@/lib/api";
+import { API_URL, ENDPOINTS, agregarListaDeseos, borrarListaDeseos } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { loginSchema, productoSchema } from "@/schemas";
 
@@ -13,17 +13,30 @@ export async function loginAction(formData) {
     password: formData.get("password"),
   };
 
+  console.log("Iniciando login para:", rawData.username);
+
   const parsed = loginSchema.safeParse(rawData);
   if (!parsed.success) {
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
-  const res = await fetch(`${API_URL}/api/token/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(parsed.data),
-    cache: "no-store",
-  }).catch(() => null);
+  const loginUrl = `${API_URL}${ENDPOINTS.write.auth.login}`;
+  console.log("Fetching to:", loginUrl);
+
+  let res;
+  try {
+    res = await fetch(loginUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed.data),
+      cache: "no-store",
+    });
+  } catch (fetchError) {
+    console.error("Error de red en login:", fetchError);
+    return { error: "No se pudo conectar con la API (red)" };
+  }
+
+  console.log("Respuesta backend:", res.status, res.statusText);
 
   if (!res) return { error: "No se pudo conectar con la API" };
   if (res.status === 401) return { error: "Credenciales incorrectas" };
@@ -88,7 +101,7 @@ export async function crearProductoAction(formData) {
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
-  const res = await llamar(ENDPOINTS.productos, { method: "POST", body: JSON.stringify(parsed.data) });
+  const res = await llamar(ENDPOINTS.write.catalogo.productos, { method: "POST", body: JSON.stringify(parsed.data) });
   if (!res) return { error: "Sin conexión con la API" };
   if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
   if (!res.ok) return { error: "No se pudo crear. Verifica categoría y marca." };
@@ -99,11 +112,33 @@ export async function crearProductoAction(formData) {
 
 export async function borrarProductoAction(formData) {
   const id = formData.get("id");
-  const res = await llamar(`${ENDPOINTS.productos}${id}/`, { method: "DELETE" });
+  const res = await llamar(`${ENDPOINTS.write.catalogo.productos}${id}/`, { method: "DELETE" });
   if (!res) return { error: "Sin conexión" };
   if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
   if (!res.ok && res.status !== 404) return { error: "No se pudo borrar" };
 
   revalidatePath("/productos");
+  return { success: true };
+}
+
+export async function agregarDeseoAction(productoId) {
+  const res = await agregarListaDeseos({ producto: productoId });
+  if (!res) return { error: "Sin conexión" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok) return { error: "No se pudo agregar a deseos" };
+
+  revalidatePath("/productos");
+  revalidatePath("/lista-deseos");
+  return { success: true };
+}
+
+export async function quitarDeseoAction(deseoId) {
+  const res = await borrarListaDeseos(deseoId);
+  if (!res) return { error: "Sin conexión" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok && res.status !== 404) return { error: "No se pudo quitar de deseos" };
+
+  revalidatePath("/productos");
+  revalidatePath("/lista-deseos");
   return { success: true };
 }
