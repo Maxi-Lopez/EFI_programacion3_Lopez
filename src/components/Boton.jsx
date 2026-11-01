@@ -3,10 +3,10 @@
 import { forwardRef } from "react";
 
 const variants = {
-  primary: "bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800",
+  primary: "bg-primary text-white hover:bg-primary/90 active:bg-primary dark:bg-primary dark:text-white",
   secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 active:bg-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700",
-  danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
-  outline: "border-2 border-brand-600 text-brand-600 hover:bg-brand-50 active:bg-brand-100 dark:hover:bg-brand-900/20",
+  danger: "bg-danger text-white hover:bg-danger/90 active:bg-danger",
+  outline: "border-2 border-primary text-primary hover:bg-primary/10 active:bg-primary/20",
   ghost: "text-slate-600 hover:bg-slate-100 active:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-800",
 };
 

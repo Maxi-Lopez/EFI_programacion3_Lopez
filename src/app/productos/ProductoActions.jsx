@@ -6,7 +6,7 @@ import { ProductoForm } from "@/components/ProductoForm";
 import { borrarProductoAction } from "@/app/actions";
 import { Boton } from "@/components/Boton";
 
-export function ProductoActions({ producto, categorias, marcas, mode }) {
+export default function ProductoActions({ producto, categorias, marcas, mode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editingData, setEditingData] = useState(producto);

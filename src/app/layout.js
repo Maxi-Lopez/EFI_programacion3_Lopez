@@ -14,7 +14,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`${head.variable} ${body.variable}`} data-theme="light">
+    <html lang="es" className={`${head.variable} ${body.variable}`}>
       <body className="bg-field font-sans text-slate-800 antialiased min-h-screen">
         <ThemeProvider>
           <AuthProvider>

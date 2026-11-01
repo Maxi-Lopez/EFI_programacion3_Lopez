@@ -1,111 +1,60 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { agregarListaDeseos, borrarListaDeseos } from "@/lib/api-client";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const loadUserRef = useRef(null);
-  const loadWishlistRef = useRef(null);
+  const pathname = usePathname();
 
-  const loadUser = useCallback(async () => {
+  const loadUser = useCallback(() => {
     try {
-      const cookie = document.cookie.split("; ").find((c) => c.startsWith("user_data="));
+      const cookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("user_data="));
+
       if (cookie) {
-        const value = decodeURIComponent(cookie.split("=")[1]);
-        setUser(JSON.parse(value));
+        const data = JSON.parse(decodeURIComponent(cookie.split("=")[1]));
+        setUser(data);
+      } else {
+        setUser(null);
       }
-    } catch {
+    } catch (error) {
+      console.error("Error al leer la cookie:", error);
       setUser(null);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const loadWishlist = useCallback(async () => {
-    try {
-      const res = await fetch("/api/usuarios/lista-deseos-get/");
-      if (res.ok) {
-        const data = await res.json();
-        const items = Array.isArray(data) ? data : data.results ?? [];
-        setWishlist(items.map((w) => w.producto_id ?? w.id).filter(Boolean));
-      }
-    } catch {
-      setWishlist([]);
-    }
-  }, []);
-
   useEffect(() => {
-    loadUserRef.current = loadUser;
-    loadWishlistRef.current = loadWishlist;
-  }, [loadUser, loadWishlist]);
+    loadUser();
+  }, [loadUser, pathname]);
 
-  useEffect(() => {
-    loadUserRef.current?.();
-  }, []);
-
-  useEffect(() => {
-    if (user) loadWishlistRef.current?.();
-  }, [user]);
-
-  const login = useCallback(async (username, password) => {
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-    const result = await fetch("/api/login", { method: "POST", body: formData }).then((r) => r.json());
-    if (result.success) {
-      await loadUserRef.current?.();
-      router.push("/productos");
-      router.refresh();
-    }
-    return result;
-  }, [router]);
-
-  const logout = useCallback(async () => {
-    await fetch("/api/logout", { method: "POST" });
+  const logout = async () => {
+    document.cookie = "access=; path=/; max-age=0";
+    document.cookie = "user_data=; path=/; max-age=0";
     setUser(null);
-    setWishlist([]);
-    router.push("/login");
-    router.refresh();
-  }, [router]);
-
-  const toggleDeseo = useCallback(async (productoId) => {
-    if (!user) return { error: "Debes iniciar sesión" };
-    const exists = wishlist.includes(productoId);
-    let result;
-    if (exists) {
-      result = await borrarListaDeseos(productoId);
-    } else {
-      result = await agregarListaDeseos({ producto: productoId });
-    }
-    if (result.success) {
-      setWishlist((prev) => (exists ? prev.filter((id) => id !== productoId) : [...prev, productoId]));
-    }
-    return result;
-  }, [user, wishlist]);
-
-  const value = {
-    user,
-    wishlist,
-    loading,
-    login,
-    logout,
-    toggleDeseo,
-    isLoggedIn: !!user,
-    isAdmin: user?.role === "admin" || user?.is_staff === true,
+    window.location.href = "/login";
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const isAdmin = user?.role === "admin" || user?.is_staff === true;
+
+  return (
+    <AuthContext.Provider value={{ user, loading, logout, isAdmin }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth debe usarse dentro de AuthProvider");
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth debe usarse dentro de un AuthProvider");
+  }
+  return context;
 }

@@ -15,9 +15,12 @@ async function ProductosContent() {
   ]);
 
   const totalProductos = productos.length;
-  const stockBajo = productos.filter((p) => p.stock > 0 && p.stock < 5).length;
-  const sinStock = productos.filter((p) => p.stock === 0).length;
-  const valorInventario = productos.reduce((acc, p) => acc + (p.precio || 0) * (p.stock || 0), 0);
+  const stockBajo = productos.filter((p) => p.stock_total > 0 && p.stock_total < 5).length;
+  const sinStock = productos.filter((p) => p.stock_total === 0).length;
+  const valorInventario = productos.reduce((acc, p) => {
+    const precio = parseFloat(p.precio_lista || p.precio_oferta || p.precio || "0");
+    return acc + precio * (p.stock_total || 0);
+  }, 0);
 
   return (
     <div>
@@ -59,49 +62,53 @@ async function ProductosContent() {
                   </td>
                 </tr>
               ) : (
-                productos.map((producto) => (
-                  <tr key={producto.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        {producto.imagen && (
-                          <img src={producto.imagen} alt="" className="w-10 h-10 rounded-lg object-cover" />
-                        )}
-                        <div>
-                          <p className="font-medium text-slate-900 dark:text-white">{producto.nombre}</p>
-                          {producto.descripcion && (
-                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{producto.descripcion}</p>
+                productos.map((producto) => {
+                  const precio = parseFloat(producto.precio_lista || producto.precio_oferta || producto.precio || "0");
+                  const stock = producto.stock_total ?? 0;
+                  return (
+                    <tr key={producto.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          {producto.imagen && (
+                            <img src={producto.imagen} alt="" className="w-10 h-10 rounded-lg object-cover" />
                           )}
+                          <div>
+                            <p className="font-medium text-slate-900 dark:text-white">{producto.nombre}</p>
+                            {producto.descripcion_corta && (
+                              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{producto.descripcion_corta}</p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
-                      {categorias.find((c) => c.id === producto.categoria)?.nombre || "—"}
-                    </td>
-                    <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
-                      {marcas.find((m) => m.id === producto.marca)?.nombre || "—"}
-                    </td>
-                    <td className="px-4 py-4 text-right font-medium text-slate-900 dark:text-white">
-                      ${Number(producto.precio).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        producto.stock === 0 ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" :
-                        producto.stock < 5 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" :
-                        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                      }`}>
-                        {producto.stock}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <ProductoActions
-                        producto={producto}
-                        categorias={categorias}
-                        marcas={marcas}
-                        mode="edit"
-                      />
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
+                        {producto.categoria?.nombre || "—"}
+                      </td>
+                      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
+                        {producto.marca?.nombre || "—"}
+                      </td>
+                      <td className="px-4 py-4 text-right font-medium text-slate-900 dark:text-white">
+                        ${precio.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          stock === 0 ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" :
+                          stock < 5 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" :
+                          "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                        }`}>
+                          {stock}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <ProductoActions
+                          producto={producto}
+                          categorias={categorias}
+                          marcas={marcas}
+                          mode="edit"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

@@ -3,12 +3,6 @@
 @theme inline {
   --font-sans: var(--f-body), system-ui, sans-serif;
   --font-display: var(--f-head), system-ui, sans-serif;
-}
-
-:root {
-  --color-ink: #0f0f1a;
-  --color-field: #f8fafc;
-  --color-line: #e2e8f0;
   --color-brand: #7c3aed;
   --color-brand-dark: #5b21b6;
   --color-brand-light: #ede9fe;
@@ -17,12 +11,25 @@
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
+  --color-ink: #0f0f1a;
+  --color-field: #f8fafc;
+  --color-line: #e2e8f0;
+  --color-surface: #ffffff;
+  --color-primary: #7c3aed;
+}
+
+:root {
+  --color-ink: #0f0f1a;
+  --color-field: #f8fafc;
+  --color-line: #e2e8f0;
+  --color-surface: #ffffff;
 }
 
 [data-theme="dark"] {
   --color-ink: #f8fafc;
   --color-field: #0f172a;
   --color-line: #1e293b;
+  --color-surface: #1e293b;
   --color-brand: #a78bfa;
   --color-brand-dark: #8b5cf6;
   --color-brand-light: #312e81;
