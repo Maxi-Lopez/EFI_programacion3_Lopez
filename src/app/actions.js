@@ -60,18 +60,33 @@ export async function loginAction(formData) {
     maxAge: 60 * 60 * 2,
   });
 
-  const payload = access.split(".")[1];
+  const payloadBase64 = access.split(".")[1];
+  let payload;
   try {
-    const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-    (await cookies()).set("user_data", JSON.stringify({ username: decoded.username, user_id: decoded.user_id, role: decoded.role, is_staff: decoded.is_staff }), {
-      httpOnly: false,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 2,
-    });
+    const base64 = payloadBase64.replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(base64);
+    payload = JSON.parse(json);
   } catch {
+    payload = {};
   }
+
+  const username = payload.username || formData.get("username");
+  const role = payload.role || "cliente";
+  const is_staff = payload.is_staff || false;
+  const user_id = payload.user_id || payload.sub;
+
+  (await cookies()).set("user_data", JSON.stringify({
+    username,
+    role,
+    is_staff,
+    user_id,
+  }), {
+    httpOnly: false,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 2,
+  });
 
   return { success: true };
 }
