@@ -25,3 +25,12 @@ export const productoSchema = z.object({
   marca: z.number().int().positive("Marca requerida"),
   imagen: z.string().url("URL inválida").optional().or(z.literal("")),
 });
+
+export const proveedorSchema = z.object({
+  nombre: z.string().min(2, "Mínimo 2 caracteres").max(150),
+  cuit: z.string()
+    .transform((val) => val.replace(/\D/g, ''))
+    .refine((val) => val.length === 11, "El CUIT debe tener 11 dígitos"),
+  email: z.string().email("Email inválido").optional().or(z.literal("")),
+  telefono: z.string().max(50).optional().or(z.literal("")),
+});

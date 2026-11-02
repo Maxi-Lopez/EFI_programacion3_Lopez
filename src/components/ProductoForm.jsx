@@ -89,7 +89,6 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
   }, [initialData, reset]);
 
   const handleCrearCategoria = async () => {
-    console.log(">>> handleCrearCategoria: iniciando, nombre:", nuevaCategoriaNombre);
     if (!nuevaCategoriaNombre.trim()) {
       setErrorCategoria("El nombre es requerido");
       return;
@@ -100,12 +99,9 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
     const formData = new FormData();
     formData.append("nombre", nuevaCategoriaNombre.trim());
 
-    console.log(">>> handleCrearCategoria: llamando Server Action...");
     const result = await crearCategoriaAction(formData);
-    console.log(">>> handleCrearCategoria: respuesta Server Action:", result);
 
     if (result.success && result.categoria) {
-      console.log(">>> handleCrearCategoria: éxito, nueva categoria:", result.categoria);
       setCategoriasLocales((prev) => {
         const exists = prev.some((c) => c.id === result.categoria.id);
         return exists ? prev : [...prev, result.categoria];
@@ -114,17 +110,14 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
       setNuevaCategoriaNombre("");
       setValue("categoria", result.categoria.id, { shouldValidate: true });
     } else if (result.fields?.nombre?.[0]) {
-      console.log(">>> handleCrearCategoria: error de validación:", result.fields.nombre[0]);
       setErrorCategoria(result.fields.nombre[0]);
     } else {
-      console.log(">>> handleCrearCategoria: error:", result.error);
       setErrorCategoria(result.error || "Error al crear categoría");
     }
     setCreandoCategoria(false);
   };
 
   const handleCrearMarca = async () => {
-    console.log(">>> handleCrearMarca: iniciando, nombre:", nuevaMarcaNombre);
     if (!nuevaMarcaNombre.trim()) {
       setErrorMarca("El nombre es requerido");
       return;
@@ -135,12 +128,9 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
     const formData = new FormData();
     formData.append("nombre", nuevaMarcaNombre.trim());
 
-    console.log(">>> handleCrearMarca: llamando Server Action...");
     const result = await crearMarcaAction(formData);
-    console.log(">>> handleCrearMarca: respuesta Server Action:", result);
 
     if (result.success && result.marca) {
-      console.log(">>> handleCrearMarca: éxito, nueva marca:", result.marca);
       setMarcasLocales((prev) => {
         const exists = prev.some((m) => m.id === result.marca.id);
         return exists ? prev : [...prev, result.marca];
@@ -149,17 +139,14 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
       setNuevaMarcaNombre("");
       setValue("marca", result.marca.id, { shouldValidate: true });
     } else if (result.fields?.nombre?.[0]) {
-      console.log(">>> handleCrearMarca: error de validación:", result.fields.nombre[0]);
       setErrorMarca(result.fields.nombre[0]);
     } else {
-      console.log(">>> handleCrearMarca: error:", result.error);
       setErrorMarca(result.error || "Error al crear marca");
     }
     setCreandoMarca(false);
   };
 
   const onSubmit = async (data) => {
-    console.log(">>> ProductoForm onSubmit data:", data);
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (value !== "" && value !== undefined) {
@@ -170,7 +157,6 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
 
     const action = isEditing ? editarProductoAction : crearProductoAction;
     const result = await action(formData);
-    console.log(">>> ProductoForm Server Action result:", result);
 
     if (result.success) {
       onSuccess?.();
@@ -299,11 +285,9 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
   };
 
   useEffect(() => {
-    console.log(">>> useEffect categoria watched:", watchedCategoria);
   }, [watchedCategoria]);
 
   useEffect(() => {
-    console.log(">>> useEffect marca watched:", watchedMarca);
   }, [watchedMarca]);
 
   return (

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { API_URL, ENDPOINTS, agregarListaDeseos, borrarListaDeseos } from "@/lib/api";
 import { getToken, getTokenPayload } from "@/lib/auth";
-import { loginSchema, registerSchema, productoSchema } from "@/schemas";
+import { loginSchema, registerSchema, productoSchema, proveedorSchema } from "@/schemas";
 
 async function requireAdmin() {
   const payload = await getTokenPayload();
@@ -413,5 +413,104 @@ export async function quitarDeseoAction(deseoId) {
 
   revalidatePath("/productos");
   revalidatePath("/lista-deseos");
+  return { success: true };
+}
+
+export async function crearProveedorAction(formData) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
+  const rawData = {
+    nombre: formData.get("nombre"),
+    cuit: formData.get("cuit"),
+    email: formData.get("email") || "",
+    telefono: formData.get("telefono") || "",
+  };
+
+  const parsed = proveedorSchema.safeParse(rawData);
+  if (!parsed.success) {
+    return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
+  }
+
+  const res = await llamar(ENDPOINTS.write.proveedores.proveedores, { method: "POST", body: JSON.stringify(parsed.data) });
+  if (!res) return { error: "Sin conexión con la API" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok) {
+    const errorData = await res.json().catch(async () => {
+      const text = await res.text().catch(() => "");
+      return { detail: text || "Error desconocido del servidor" };
+    });
+    if (res.status === 400 && errorData && typeof errorData === "object") {
+      const fields = {};
+      Object.entries(errorData).forEach(([key, messages]) => {
+        if (Array.isArray(messages) && messages.length > 0) {
+          fields[key] = [messages[0]];
+        }
+      });
+      if (Object.keys(fields).length > 0) {
+        return { error: "Error de validación", fields };
+      }
+    }
+    return { error: JSON.stringify(errorData) };
+  }
+
+  revalidatePath("/proveedores");
+  return { success: true };
+}
+
+export async function editarProveedorAction(formData) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
+  const id = formData.get("id");
+  const rawData = {
+    nombre: formData.get("nombre"),
+    cuit: formData.get("cuit"),
+    email: formData.get("email") || "",
+    telefono: formData.get("telefono") || "",
+  };
+
+  const parsed = proveedorSchema.safeParse(rawData);
+  if (!parsed.success) {
+    return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
+  }
+
+  const res = await llamar(`${ENDPOINTS.write.proveedores.proveedores}${id}/`, { method: "PUT", body: JSON.stringify(parsed.data) });
+  if (!res) return { error: "Sin conexión con la API" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok) {
+    const errorData = await res.json().catch(async () => {
+      const text = await res.text().catch(() => "");
+      return { detail: text || "Error desconocido del servidor" };
+    });
+    if (res.status === 400 && errorData && typeof errorData === "object") {
+      const fields = {};
+      Object.entries(errorData).forEach(([key, messages]) => {
+        if (Array.isArray(messages) && messages.length > 0) {
+          fields[key] = [messages[0]];
+        }
+      });
+      if (Object.keys(fields).length > 0) {
+        return { error: "Error de validación", fields };
+      }
+    }
+    return { error: JSON.stringify(errorData) };
+  }
+
+  revalidatePath("/proveedores");
+  return { success: true };
+}
+
+export async function borrarProveedorAction(formData) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
+  const id = formData.get("id");
+  const res = await llamar(`${ENDPOINTS.write.proveedores.proveedores}${id}/`, { method: "DELETE" });
+  if (!res) return { error: "Sin conexión" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok && res.status !== 404) return { error: "No se pudo borrar" };
+
+  revalidatePath("/proveedores");
   return { success: true };
 }
