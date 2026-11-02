@@ -395,25 +395,105 @@ export async function crearMarcaAction(formData) {
 }
 
 export async function agregarDeseoAction(productoId) {
-  const res = await agregarListaDeseos({ producto: productoId });
+  const token = await getToken();
+  const productoIdNum = Number(productoId);
+  console.log("agregarDeseoAction: enviando POST con productoId:", productoIdNum);
+  const res = await fetch(`${API_URL}/api/usuarios/lista-deseos/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ producto: productoIdNum }),
+    cache: "no-store",
+  });
   if (!res) return { error: "Sin conexión" };
   if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
-  if (!res.ok) return { error: "No se pudo agregar a deseos" };
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    return { error: errorData.detail || "No se pudo agregar a deseos" };
+  }
+  const data = await res.json();
+  console.log("agregarDeseoAction: respuesta del backend:", data);
+  const deseoId = data.id ?? data.producto_id ?? data.producto?.id;
+  revalidatePath("/productos");
+  revalidatePath("/lista-deseos");
+  return { success: true, data: { id: deseoId, productoId: data.producto?.id ?? productoIdNum } };
+}
 
+export async function quitarDeseoAction(deseoId) {
+  if (!deseoId) {
+    console.log("quitarDeseoAction: deseoId es undefined/null, no se puede hacer DELETE");
+    return { error: "ID de deseo requerido" };
+  }
+  console.log("quitarDeseoAction: haciendo DELETE para deseoId:", deseoId);
+  const token = await getToken();
+  const res = await fetch(`${API_URL}/api/usuarios/lista-deseos/${deseoId}/`, {
+    method: "DELETE",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    cache: "no-store",
+  });
+  if (!res) return { error: "Sin conexión" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok && res.status !== 404) {
+    const errorData = await res.json().catch(() => ({}));
+    return { error: errorData.detail || "No se pudo quitar de deseos" };
+  }
+  console.log("quitarDeseoAction: DELETE exitoso para deseoId:", deseoId);
   revalidatePath("/productos");
   revalidatePath("/lista-deseos");
   return { success: true };
 }
 
-export async function quitarDeseoAction(deseoId) {
-  const res = await borrarListaDeseos(deseoId);
-  if (!res) return { error: "Sin conexión" };
-  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
-  if (!res.ok && res.status !== 404) return { error: "No se pudo quitar de deseos" };
+export async function getWishlistAction() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access")?.value;
 
-  revalidatePath("/productos");
-  revalidatePath("/lista-deseos");
-  return { success: true };
+  const userDataCookie = cookieStore.get("user_data");
+  let userId = null;
+  if (userDataCookie) {
+    try {
+      const userData = JSON.parse(decodeURIComponent(userDataCookie.value));
+      userId = userData.user_id;
+    } catch {
+      userId = null;
+    }
+  }
+
+  let page = 1;
+  let all = [];
+
+  while (true) {
+    const res = await fetch(`${API_URL}/api/usuarios/lista-deseos-get/?page=${page}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      cache: "no-store",
+    });
+    if (!res) break;
+    if (res.status === 401 || res.status === 403) break;
+    if (!res.ok) break;
+
+    const data = await res.json();
+    console.log(`Wishlist página ${page}:`, data);
+
+    if (Array.isArray(data)) {
+      all = all.concat(data);
+      break;
+    }
+
+    all = all.concat(data.results ?? []);
+    if (!data.next) break;
+    page += 1;
+  }
+
+  const filtrados = all.filter((item) => {
+    const itemUserId = item.usuario?.id || item.usuario_id;
+    return userId != null ? Number(itemUserId) === Number(userId) : true;
+  });
+
+  return filtrados.map((item) => ({
+    id: item.id,
+    productoId: item.producto?.id ?? item.producto_id,
+  })).filter((item) => item.productoId != null);
 }
 
 export async function crearProveedorAction(formData) {

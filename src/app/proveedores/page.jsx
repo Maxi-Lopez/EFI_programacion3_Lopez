@@ -39,6 +39,8 @@ async function ProveedoresContent() {
     error = "No se pudieron cargar los proveedores. Intente nuevamente.";
   }
 
+  console.log("[proveedores/page] isAdmin:", isAdmin, "| proveedores obtenidos:", proveedores.length);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -79,7 +81,7 @@ async function ProveedoresContent() {
               ) : (
                 proveedores.map((prov) => (
                   <tr key={prov.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                    <td className="px-4 py-4 font-medium">{prov.nombre}</td>
+                    <td className="px-4 py-4 font-medium text-slate-900 dark:text-white">{prov.nombre || "—"}</td>
                     <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{formatearCuit(prov.cuit) || "—"}</td>
                     <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{prov.telefono || "—"}</td>
                     <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{prov.email || "—"}</td>

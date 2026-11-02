@@ -6,6 +6,7 @@ import { Boton } from "@/components/Boton";
 import Link from "next/link";
 import { ProductoForm } from "@/components/ProductoForm";
 import { Modal, ConfirmModal } from "@/components/Modal";
+import { BotonDeseo } from "@/components/BotonDeseo";
 import Cargando from "@/components/Cargando";
 import ProductoActions from "@/components/ProductoActions";
 
@@ -66,6 +67,7 @@ async function ProductosContent() {
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">
                 <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Producto</th>
+                <th className="px-4 py-3 text-center font-medium text-slate-500 dark:text-slate-400">Favorito</th>
                 <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Categoría</th>
                 <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Marca</th>
                 <th className="px-4 py-3 text-right font-medium text-slate-500 dark:text-slate-400">Precio</th>
@@ -78,7 +80,7 @@ async function ProductosContent() {
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {productos.length === 0 ? (
                 <tr>
-                  <td colSpan={isAdmin ? 6 : 5} className="px-4 py-12 text-center text-slate-500">
+                    <td colSpan={isAdmin ? 7 : 6} className="px-4 py-12 text-center text-slate-500">
                     No hay productos.{isAdmin && " Haz clic en Agregar Producto para crear uno."}
                   </td>
                 </tr>
@@ -93,15 +95,18 @@ async function ProductosContent() {
                           {producto.imagen && (
                             <img src={producto.imagen} alt="" className="w-10 h-10 rounded-lg object-cover" />
                           )}
-                          <div>
+                          <div className="min-w-0">
                             <Link href={`/productos/${producto.id}`}>
-                              <p className="font-medium text-slate-900 dark-text-white">{producto.nombre}</p>
+                              <p className="font-medium text-slate-900 dark:text-white line-clamp-1 truncate max-w-[180px]">{producto.nombre}</p>
                             </Link>
                             {producto.descripcion_corta && (
                               <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{producto.descripcion_corta}</p>
                             )}
                           </div>
                         </div>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <BotonDeseo productoId={producto.id} />
                       </td>
                       <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
                         {producto.categoria?.nombre || "—"}

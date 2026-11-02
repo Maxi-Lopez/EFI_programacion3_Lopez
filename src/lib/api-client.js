@@ -23,5 +23,10 @@ async function requestClient(path, options = {}) {
   return res.json();
 }
 
+export const getProductosClient = async () => {
+  const data = await requestClient("/api/catalogo/producto-get/");
+  return Array.isArray(data) ? data : data.results || [];
+};
+
 export const agregarListaDeseos = (data) => requestClient("/api/usuarios/lista-deseos/", { method: "POST", body: JSON.stringify(data) });
 export const borrarListaDeseos = (id) => requestClient(`/api/usuarios/lista-deseos/${id}/`, { method: "DELETE" });

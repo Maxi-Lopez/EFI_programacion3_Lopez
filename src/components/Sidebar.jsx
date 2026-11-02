@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useTheme } from "@/context/ThemeContext";
+import { BotonTema } from "@/components/BotonTema";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout, isAdmin, loading } = useAuth();
-  const { theme, toggleTheme, mounted } = useTheme();
 
   const navItems = [
     { href: "/productos", label: "Productos", icon: "📦" },
@@ -81,15 +80,7 @@ export function Sidebar() {
           )}
 
           {/* Toggle de Tema */}
-          {mounted && (
-            <button
-              onClick={toggleTheme}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
-            >
-              <span>{theme === "light" ? "🌙" : "☀️"}</span>
-              {theme === "light" ? "Modo Oscuro" : "Modo Claro"}
-            </button>
-          )}
+          <BotonTema />
         </div>
       </div>
     </aside>
