@@ -1,37 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Nexusgamer - EFI Programacion 3
 
-## Getting Started
+Sistema de gestion de inventario y ventas para tienda de computacion y gaming. Permite administrar productos, categorias, marcas, proveedores, compras, ventas y lista de deseos de usuarios, con autenticación basada en JWT y roles de administrador y cliente.
 
-First, run the development server:
+## Enlaces
+
+- **API del Backend**: [URL_API_BACKEND]
+- **Tablero Kanban**: [URL_TABLER0_KANBAN]
+
+## Instalacion y ejecucion local
+
+1. Clonar el repositorio:
+
+```bash
+git clone <URL_REPOSITORIO>
+cd EFI_next-drf_Lopez
+```
+
+2. Instalar dependencias:
+
+```bash
+npm install
+```
+
+3. Configurar variables de entorno. Crear un archivo `.env.local` en la raiz del proyecto con el siguiente contenido:
+
+```
+NEXT_PUBLIC_API_URL=[URL_API_BACKEND]
+```
+
+4. Ejecutar el servidor de desarrollo:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Abrir [http://localhost:3000](http://localhost:3000) en el navegador.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Ejecucion de pruebas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Para correr el suite de pruebas unitarias con Vitest y React Testing Library:
 
-## Learn More
+```bash
+npm run test
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Capturas de pantalla
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Catalogo de productos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Catalogo](./public/capturas/catalogo.png)
 
-## Deploy on Vercel
+### Lista de deseos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![Lista de deseos](./public/capturas/deseos.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# EFI_programacion3_Lopez
+### Gestion de proveedores
+
+![Proveedores](./public/capturas/proveedores.png)
+
+### Movimientos (ventas y compras)
+
+![Movimientos](./public/capturas/movimientos.png)
+
+## Tecnologías utilizadas
+
+- Next.js 16
+- React 19
+- Tailwind CSS v4
+- React Hook Form
+- Zod
+- Vitest
+
+## Integrantes del grupo
+
+- [Nombre 1]
+- [Nombre 2]
+- [Nombre 3]
+- [Nombre 4]
+
+## Despliegue
+
+- **Frontend**: Desplegado en Vercel. [URL_VERCEL]
+- **Backend**: Desplegado en Render o Supabase. [URL_BACKEND_DESPLIEGUE]
+
+Para desplegar el frontend en Vercel, conectar el repositorio de GitHub y configurar la variable de entorno `NEXT_PUBLIC_API_URL` con la URL del backend en produccion.
+
+## Estructura del proyecto
+
+```
+src/
+├── app/
+│   ├── actions.js
+│   ├── globals.css
+│   ├── layout.js
+│   ├── page.jsx
+│   ├── login/
+│   │   └── page.jsx
+│   ├── productos/
+│   │   ├── page.jsx
+│   │   └── [id]/
+│   │       └── page.jsx
+│   ├── proveedores/
+│   │   └── page.jsx
+│   ├── movimientos/
+│   │   ├── page.jsx
+│   │   ├── ventas/
+│   │   │   └── page.jsx
+│   │   └── compras/
+│   │       └── page.jsx
+│   ├── lista-deseos/
+│   │   └── page.jsx
+│   └── sobre-nosotros/
+│       └── page.jsx
+├── components/
+│   ├── Boton.jsx
+│   ├── BotonDeseo.jsx
+│   ├── BotonTema.jsx
+│   ├── Card.jsx
+│   ├── Cargando.jsx
+│   ├── Input.jsx
+│   ├── Modal.jsx
+│   ├── ProductoForm.jsx
+│   ├── ProductoActions.jsx
+│   ├── ProveedorForm.jsx
+│   ├── ProveedorActions.jsx
+│   └── Sidebar.jsx
+├── context/
+│   ├── AuthContext.jsx
+│   └── ThemeContext.jsx
+├── lib/
+│   ├── api.js
+│   ├── api-client.js
+│   └── auth.js
+├── schemas/
+│   └── index.js
+└── ...
+```
