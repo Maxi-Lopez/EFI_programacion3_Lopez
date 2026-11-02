@@ -39,7 +39,6 @@ export const ENDPOINTS = {
     },
   },
 
-  // Escritura (POST/PUT/DELETE)
   write: {
     // Auth
     auth: {
@@ -109,7 +108,6 @@ async function request(path, options = {}) {
   return res.json();
 }
 
-// ===== LECTURA (GET) =====
 
 // Auth
 export const getAuthLogin = () => ENDPOINTS.read.auth.login;
@@ -132,7 +130,6 @@ export const getProveedores = () => list(ENDPOINTS.read.proveedores.proveedores)
 export const getCompras = () => list(ENDPOINTS.read.compras.compras);
 export const getVentas = () => list(ENDPOINTS.read.ventas.ventas);
 
-// ===== ESCRITURA (POST/PUT/DELETE) =====
 
 // Auth
 export const postAuthLogin = (data) => request(ENDPOINTS.write.auth.login, { method: "POST", body: JSON.stringify(data) });
