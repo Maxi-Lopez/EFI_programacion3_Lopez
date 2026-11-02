@@ -22,15 +22,12 @@ export async function loginAction(formData) {
     password: formData.get("password"),
   };
 
-  console.log("Iniciando login para:", rawData.username);
-
   const parsed = loginSchema.safeParse(rawData);
   if (!parsed.success) {
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
   const loginUrl = `${API_URL}${ENDPOINTS.write.auth.login}`;
-  console.log("Fetching to:", loginUrl);
 
   let res;
   try {
@@ -44,8 +41,6 @@ export async function loginAction(formData) {
     console.error("Error de red en login:", fetchError);
     return { error: "No se pudo conectar con la API (red)" };
   }
-
-  console.log("Respuesta backend:", res.status, res.statusText);
 
   if (!res) return { error: "No se pudo conectar con la API" };
   if (res.status === 401) return { error: "Credenciales incorrectas" };
@@ -102,16 +97,12 @@ export async function registerAction(formData) {
     dni: formData.get("dni") || "",
   };
 
-  console.log("Iniciando registro para:", rawData.username);
-
   const parsed = registerSchema.safeParse(rawData);
   if (!parsed.success) {
-    console.log(">>> Zod error details:", parsed.error.flatten().fieldErrors);
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
   const registerUrl = `${API_URL}/api/usuarios/cliente/`;
-  console.log("Fetching to:", registerUrl);
 
   let res;
   try {
@@ -125,8 +116,6 @@ export async function registerAction(formData) {
     console.error("Error de red en registro:", fetchError);
     return { error: "No se pudo conectar con la API (red)" };
   }
-
-  console.log("Respuesta backend:", res.status, res.statusText);
 
   if (!res) return { error: "No se pudo conectar con la API" };
   if (res.status === 400) {
@@ -179,8 +168,6 @@ export async function crearProductoAction(formData) {
     sku: formData.get("sku") || `SKU-${Date.now()}`,
   };
 
-  console.log(">>> crearProductoAction rawData:", rawData);
-
   const parsed = productoSchema.safeParse({
     nombre: rawData.nombre,
     sku: rawData.sku,
@@ -191,14 +178,11 @@ export async function crearProductoAction(formData) {
     marca: rawData.marca,
     imagen: rawData.imagen,
   });
-  console.log(">>> crearProductoAction Zod parsed:", parsed);
   if (!parsed.success) {
-    console.log(">>> Zod error details:", parsed.error.flatten().fieldErrors);
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
   const res = await llamar(ENDPOINTS.write.catalogo.productos, { method: "POST", body: JSON.stringify(rawData) });
-  console.log(">>> crearProductoAction API response:", res?.status, res?.ok);
   if (!res) return { error: "Sin conexión con la API" };
   if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
   if (!res.ok) {
@@ -206,7 +190,6 @@ export async function crearProductoAction(formData) {
       const text = await res.text().catch(() => "");
       return { detail: text || "Error desconocido del servidor" };
     });
-    console.log(">>> Error del backend al crear producto:", errorData);
     if (res.status === 400 && errorData && typeof errorData === "object") {
       const fields = {};
       Object.entries(errorData).forEach(([key, messages]) => {
@@ -232,8 +215,6 @@ export async function crearProductoAction(formData) {
 export async function editarProductoAction(formData) {
   const authError = await requireAdmin();
   if (authError) return authError;
-
-  console.log(">>> editarProductoAction recibido:", Object.fromEntries(formData.entries()));
 
   const id = formData.get("id");
   const categoriaRaw = formData.get("categoria");
@@ -261,7 +242,6 @@ export async function editarProductoAction(formData) {
     imagen: rawData.imagen,
   });
   if (!parsed.success) {
-    console.log(">>> Zod error details:", parsed.error.flatten().fieldErrors);
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
@@ -273,7 +253,6 @@ export async function editarProductoAction(formData) {
       const text = await res.text().catch(() => "");
       return { detail: text || "Error desconocido del servidor" };
     });
-    console.log(">>> Error del backend al editar producto:", errorData);
     if (res.status === 400 && errorData && typeof errorData === "object") {
       const fields = {};
       Object.entries(errorData).forEach(([key, messages]) => {
@@ -331,7 +310,6 @@ export async function crearCategoriaAction(formData) {
       const text = await res.text().catch(() => "");
       return { detail: text || "Error desconocido del servidor" };
     });
-    console.log(">>> Error del backend al crear categoría:", errorData);
     if (res.status === 400 && errorData && typeof errorData === "object") {
       const fields = {};
       Object.entries(errorData).forEach(([key, messages]) => {
@@ -373,7 +351,6 @@ export async function crearMarcaAction(formData) {
       const text = await res.text().catch(() => "");
       return { detail: text || "Error desconocido del servidor" };
     });
-    console.log(">>> Error del backend al crear marca:", errorData);
     if (res.status === 400 && errorData && typeof errorData === "object") {
       const fields = {};
       Object.entries(errorData).forEach(([key, messages]) => {
@@ -397,7 +374,6 @@ export async function crearMarcaAction(formData) {
 export async function agregarDeseoAction(productoId) {
   const token = await getToken();
   const productoIdNum = Number(productoId);
-  console.log("agregarDeseoAction: enviando POST con productoId:", productoIdNum);
   const res = await fetch(`${API_URL}/api/usuarios/lista-deseos/`, {
     method: "POST",
     headers: {
@@ -414,7 +390,6 @@ export async function agregarDeseoAction(productoId) {
     return { error: errorData.detail || "No se pudo agregar a deseos" };
   }
   const data = await res.json();
-  console.log("agregarDeseoAction: respuesta del backend:", data);
   const deseoId = data.id ?? data.producto_id ?? data.producto?.id;
   revalidatePath("/productos");
   revalidatePath("/lista-deseos");
@@ -423,10 +398,8 @@ export async function agregarDeseoAction(productoId) {
 
 export async function quitarDeseoAction(deseoId) {
   if (!deseoId) {
-    console.log("quitarDeseoAction: deseoId es undefined/null, no se puede hacer DELETE");
     return { error: "ID de deseo requerido" };
   }
-  console.log("quitarDeseoAction: haciendo DELETE para deseoId:", deseoId);
   const token = await getToken();
   const res = await fetch(`${API_URL}/api/usuarios/lista-deseos/${deseoId}/`, {
     method: "DELETE",
@@ -439,7 +412,7 @@ export async function quitarDeseoAction(deseoId) {
     const errorData = await res.json().catch(() => ({}));
     return { error: errorData.detail || "No se pudo quitar de deseos" };
   }
-  console.log("quitarDeseoAction: DELETE exitoso para deseoId:", deseoId);
+
   revalidatePath("/productos");
   revalidatePath("/lista-deseos");
   return { success: true };
@@ -473,7 +446,6 @@ export async function getWishlistAction() {
     if (!res.ok) break;
 
     const data = await res.json();
-    console.log(`Wishlist página ${page}:`, data);
 
     if (Array.isArray(data)) {
       all = all.concat(data);

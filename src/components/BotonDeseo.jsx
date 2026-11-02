@@ -10,7 +10,6 @@ export function BotonDeseo({ productoId }) {
 
   // 2. El hook useCallback
   const handleClick = useCallback(async () => {
-    console.log("Toggle deseo:", productoId);
     setLoading(true);
     await toggleDeseo(productoId);
     setLoading(false);
@@ -20,9 +19,6 @@ export function BotonDeseo({ productoId }) {
   if (!user) return null;
 
   const isFavorite = wishlist.some((item) => item.productoId === productoId);
-
-  console.log("Wishlist actual:", wishlist);
-  console.log("¿Es favorito?", isFavorite);
 
   return (
     <button

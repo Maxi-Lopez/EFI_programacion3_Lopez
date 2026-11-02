@@ -39,8 +39,6 @@ async function ProveedoresContent() {
     error = "No se pudieron cargar los proveedores. Intente nuevamente.";
   }
 
-  console.log("[proveedores/page] isAdmin:", isAdmin, "| proveedores obtenidos:", proveedores.length);
-
   return (
     <div>
       <div className="flex items-center justify-between mb-8">

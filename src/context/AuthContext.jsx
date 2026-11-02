@@ -36,7 +36,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   const toggleDeseo = useCallback(async (productoId) => {
-    console.log("Toggle deseo:", productoId);
     if (!user) return { success: false };
 
     const existingItem = wishlist.find((item) => item.productoId === productoId);
@@ -44,34 +43,27 @@ export function AuthProvider({ children }) {
     try {
       if (existingItem && existingItem.id) {
         const result = await quitarDeseoAction(existingItem.id);
-        console.log("Resultado de la Server Action (quitar):", result);
         if (result.success) {
           setWishlist((prev) => prev.filter((item) => item.productoId !== productoId));
         }
         return result;
       } else if (existingItem && !existingItem.id) {
-        // No tenemos el id del deseo, intentar obtenerlo del backend
-        console.log("No hay id de deseo, buscando en backend...");
         const items = await getWishlistAction();
         const encontrado = items.find((item) => item.productoId === productoId);
         if (encontrado?.id) {
           setWishlist(items);
           const result = await quitarDeseoAction(encontrado.id);
-          console.log("Resultado de la Server Action (quitar tras buscar):", result);
           if (result.success) {
             setWishlist((prev) => prev.filter((item) => item.productoId !== productoId));
           }
           return result;
         }
-        console.log("No se encontró el deseo en el backend");
         return { success: false, error: "No se encontró el deseo para quitar" };
       } else {
         const result = await agregarDeseoAction(productoId);
-        console.log("Resultado de la Server Action (agregar):", result);
         if (result.success && result.data) {
           setWishlist((prev) => [...prev, { id: result.data.id, productoId: result.data.productoId }]);
         }
-        console.log("Nuevo estado wishlist:", wishlist);
         return result;
       }
     } catch (err) {
@@ -115,9 +107,6 @@ export function AuthProvider({ children }) {
       cancelled = true;
     };
   }, [user]);
-
-  // Debug: log wishlist after any state change
-  console.log("Wishlist en contexto:", wishlist);
 
   const logout = () => {
     document.cookie = "access=; path=/; max-age=0";
