@@ -7,6 +7,7 @@ export const loginSchema = z.object({
 
 export const productoSchema = z.object({
   nombre: z.string().min(2, "Mínimo 2 caracteres").max(100),
+  sku: z.string().min(1, "El SKU es obligatorio").max(100),
   descripcion: z.string().max(500).optional(),
   precio: z.number().min(0, "Precio debe ser positivo"),
   stock: z.number().int().min(0, "Stock no puede ser negativo"),

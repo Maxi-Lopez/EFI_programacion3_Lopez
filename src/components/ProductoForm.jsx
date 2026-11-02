@@ -99,6 +99,14 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
       />
 
       <Input
+        label="SKU"
+        error={errors.sku?.message}
+        placeholder="Ej: PROD-001"
+        {...register("sku")}
+        required
+      />
+
+      <Input
         label="Descripción"
         error={errors.descripcion?.message}
         placeholder="Descripción opcional"
@@ -179,9 +187,6 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
         placeholder="https://ejemplo.com/imagen.jpg"
         {...register("imagen")}
       />
-      {isEditing && initialData.sku && (
-        <Input label="SKU" error={errors.sku?.message} placeholder="Ej: PROD-001" {...register("sku")} required/>
-      )}
 
       <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
         <Boton type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
