@@ -113,6 +113,7 @@ export async function crearProductoAction(formData) {
 
   const parsed = productoSchema.safeParse({
     nombre: rawData.nombre,
+    sku: rawData.sku,
     descripcion: rawData.descripcion_corta,
     precio: rawData.precio_lista,
     stock: rawData.stock_total,
@@ -122,6 +123,7 @@ export async function crearProductoAction(formData) {
   });
   console.log(">>> crearProductoAction Zod parsed:", parsed);
   if (!parsed.success) {
+    console.log(">>> Zod error details:", parsed.error.flatten().fieldErrors);
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
@@ -162,6 +164,7 @@ export async function editarProductoAction(formData) {
 
   const parsed = productoSchema.safeParse({
     nombre: rawData.nombre,
+    sku: rawData.sku,
     descripcion: rawData.descripcion_corta,
     precio: rawData.precio_lista,
     stock: rawData.stock_total,
@@ -170,6 +173,7 @@ export async function editarProductoAction(formData) {
     imagen: rawData.imagen,
   });
   if (!parsed.success) {
+    console.log(">>> Zod error details:", parsed.error.flatten().fieldErrors);
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
