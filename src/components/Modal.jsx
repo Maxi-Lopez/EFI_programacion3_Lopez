@@ -73,6 +73,7 @@ export function Modal({ open, onClose, title, children, size = "md", className =
         ref={contentRef}
         tabIndex={-1}
         className={`w-full ${sizes[size]} rounded-xl bg-white dark:bg-slate-800 shadow-xl transform transition-all`}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         {(title || onClose) && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">

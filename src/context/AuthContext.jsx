@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
     document.cookie = "access=; path=/; max-age=0";
     document.cookie = "user_data=; path=/; max-age=0";
     setUser(null);
-    window.location.href = "/login";
+    window.location.href = "/productos";
   };
 
   const isAdmin = user?.role === "admin" || user?.is_staff === true;

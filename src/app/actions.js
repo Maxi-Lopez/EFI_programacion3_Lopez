@@ -100,23 +100,43 @@ export async function crearProductoAction(formData) {
 
   const rawData = {
     nombre: formData.get("nombre"),
-    descripcion: formData.get("descripcion") || "",
-    precio: Number(formData.get("precio")),
-    stock: Number(formData.get("stock")),
+    descripcion_corta: formData.get("descripcion") || "",
+    precio_lista: Number(formData.get("precio")),
+    stock_total: Number(formData.get("stock")),
     categoria: Number(formData.get("categoria")),
     marca: Number(formData.get("marca")),
     imagen: formData.get("imagen") || undefined,
+    sku: formData.get("sku") || `SKU-${Date.now()}`,
   };
 
-  const parsed = productoSchema.safeParse(rawData);
+  console.log(">>> crearProductoAction rawData:", rawData);
+
+  const parsed = productoSchema.safeParse({
+    nombre: rawData.nombre,
+    descripcion: rawData.descripcion_corta,
+    precio: rawData.precio_lista,
+    stock: rawData.stock_total,
+    categoria: rawData.categoria,
+    marca: rawData.marca,
+    imagen: rawData.imagen,
+  });
+  console.log(">>> crearProductoAction Zod parsed:", parsed);
   if (!parsed.success) {
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
-  const res = await llamar(ENDPOINTS.write.catalogo.productos, { method: "POST", body: JSON.stringify(parsed.data) });
+  const res = await llamar(ENDPOINTS.write.catalogo.productos, { method: "POST", body: JSON.stringify(rawData) });
+  console.log(">>> crearProductoAction API response:", res?.status, res?.ok);
   if (!res) return { error: "Sin conexión con la API" };
   if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
-  if (!res.ok) return { error: "No se pudo crear. Verifica categoría y marca." };
+  if (!res.ok) {
+    const errorData = await res.json().catch(async () => {
+      const text = await res.text().catch(() => "");
+      return { detail: text || "Error desconocido del servidor" };
+    });
+    console.log(">>> Error del backend al crear producto:", errorData);
+    return { error: JSON.stringify(errorData) };
+  }
 
   revalidatePath("/productos");
   return { success: true };
@@ -126,26 +146,44 @@ export async function editarProductoAction(formData) {
   const authError = await requireAdmin();
   if (authError) return authError;
 
+  console.log(">>> editarProductoAction recibido:", Object.fromEntries(formData.entries()));
+
   const id = formData.get("id");
   const rawData = {
+    sku: formData.get("sku"),
     nombre: formData.get("nombre"),
-    descripcion: formData.get("descripcion") || "",
-    precio: Number(formData.get("precio")),
-    stock: Number(formData.get("stock")),
+    descripcion_corta: formData.get("descripcion") || "",
+    precio_lista: Number(formData.get("precio")),
+    stock_total: Number(formData.get("stock")),
     categoria: Number(formData.get("categoria")),
     marca: Number(formData.get("marca")),
     imagen: formData.get("imagen") || undefined,
   };
 
-  const parsed = productoSchema.safeParse(rawData);
+  const parsed = productoSchema.safeParse({
+    nombre: rawData.nombre,
+    descripcion: rawData.descripcion_corta,
+    precio: rawData.precio_lista,
+    stock: rawData.stock_total,
+    categoria: rawData.categoria,
+    marca: rawData.marca,
+    imagen: rawData.imagen,
+  });
   if (!parsed.success) {
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
-  const res = await llamar(`${ENDPOINTS.write.catalogo.productos}${id}/`, { method: "PUT", body: JSON.stringify(parsed.data) });
+  const res = await llamar(`${ENDPOINTS.write.catalogo.productos}${id}/`, { method: "PUT", body: JSON.stringify(rawData) });
   if (!res) return { error: "Sin conexión con la API" };
   if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
-  if (!res.ok) return { error: "No se pudo actualizar. Verifica categoría y marca." };
+  if (!res.ok) {
+    const errorData = await res.json().catch(async () => {
+      const text = await res.text().catch(() => "");
+      return { detail: text || "Error desconocido del servidor" };
+    });
+    console.log(">>> Error del backend al editar producto:", errorData);
+    return { error: JSON.stringify(errorData) };
+  }
 
   revalidatePath("/productos");
   return { success: true };

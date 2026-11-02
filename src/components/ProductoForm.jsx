@@ -11,6 +11,31 @@ import { crearProductoAction, editarProductoAction } from "@/app/actions";
 export function ProductoForm({ categorias = [], marcas = [], initialData, onSuccess, onCancel }) {
   const isEditing = !!initialData;
 
+  const getDefaultValues = (data) => {
+    if (!data) {
+      return {
+        nombre: "",
+        descripcion: "",
+        precio: 0,
+        stock: 0,
+        categoria: "",
+        marca: "",
+        imagen: "",
+        sku: "",
+      };
+    }
+    return {
+      nombre: data.nombre || "",
+      descripcion: data.descripcion_corta || "",
+      precio: data.precio_lista || 0,
+      stock: data.stock_total || 0,
+      categoria: data.categoria?.id?.toString() || "",
+      marca: data.marca?.id?.toString() || "",
+      imagen: data.imagen_url || "",
+      sku: data.sku || "",
+    };
+  };
+
   const {
     register,
     handleSubmit,
@@ -19,33 +44,26 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(productoSchema),
-    defaultValues: {
-      nombre: "",
-      descripcion: "",
-      precio: 0,
-      stock: 0,
-      categoria: "",
-      marca: "",
-      imagen: "",
-      ...initialData,
-    },
+    defaultValues: getDefaultValues(initialData),
   });
 
   useEffect(() => {
     if (initialData) {
       reset({
         nombre: initialData.nombre || "",
-        descripcion: initialData.descripcion || "",
-        precio: initialData.precio || 0,
-        stock: initialData.stock || 0,
-        categoria: initialData.categoria?.toString() || "",
-        marca: initialData.marca?.toString() || "",
-        imagen: initialData.imagen || "",
+        descripcion: initialData.descripcion_corta || "",
+        precio: initialData.precio_lista || 0,
+        stock: initialData.stock_total || 0,
+        categoria: initialData.categoria?.id?.toString() || "",
+        marca: initialData.marca?.id?.toString() || "",
+        imagen: initialData.imagen_url || "",
+        sku: initialData.sku || "",
       });
     }
   }, [initialData, reset]);
 
   const onSubmit = async (data) => {
+    console.log(">>> ProductoForm onSubmit data:", data);
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (value !== "" && value !== undefined) {
@@ -56,6 +74,7 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
 
     const action = isEditing ? editarProductoAction : crearProductoAction;
     const result = await action(formData);
+    console.log(">>> ProductoForm Server Action result:", result);
 
     if (result.success) {
       onSuccess?.();
@@ -119,10 +138,11 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
             className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
               ${errors.categoria ? "border-red-500 focus:ring-red-500" : "border-slate-300 dark:border-slate-600"}
               dark:bg-slate-800 dark:text-slate-100`}
+            style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}
           >
-            <option value="">Seleccionar categoría</option>
+            <option value="" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>Seleccionar categoría</option>
             {categorias.map((cat) => (
-              <option key={cat.id} value={cat.id}>
+              <option key={cat.id} value={cat.id} style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>
                 {cat.nombre}
               </option>
             ))}
@@ -139,10 +159,11 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
             className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
               ${errors.marca ? "border-red-500 focus:ring-red-500" : "border-slate-300 dark:border-slate-600"}
               dark:bg-slate-800 dark:text-slate-100`}
+            style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}
           >
-            <option value="">Seleccionar marca</option>
+            <option value="" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>Seleccionar marca</option>
             {marcas.map((marca) => (
-              <option key={marca.id} value={marca.id}>
+              <option key={marca.id} value={marca.id} style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>
                 {marca.nombre}
               </option>
             ))}
@@ -158,6 +179,9 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
         placeholder="https://ejemplo.com/imagen.jpg"
         {...register("imagen")}
       />
+      {isEditing && initialData.sku && (
+        <Input label="SKU" error={errors.sku?.message} placeholder="Ej: PROD-001" {...register("sku")} required/>
+      )}
 
       <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
         <Boton type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>

@@ -1,11 +1,12 @@
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { getProductos, getCategorias, getMarcas } from "@/lib/api";
 import { Card, CardStat, CardGrid } from "@/components/Card";
 import { Boton } from "@/components/Boton";
 import { ProductoForm } from "@/components/ProductoForm";
 import { Modal, ConfirmModal } from "@/components/Modal";
 import Cargando from "@/components/Cargando";
-import ProductoActions from "./ProductoActions";
+import ProductoActions from "@/components/ProductoActions";
 
 async function ProductosContent() {
   const [productos, categorias, marcas] = await Promise.all([
@@ -13,6 +14,21 @@ async function ProductosContent() {
     getCategorias().catch(() => []),
     getMarcas().catch(() => []),
   ]);
+
+  console.log(">>> ProductosPage - productos recibidos:", productos.map(p => ({id: p.id, nombre: p.nombre, precio_lista: p.precio_lista, stock_total: p.stock_total, categoria: p.categoria, marca: p.marca})));
+
+  const cookieStore = await cookies();
+  const userCookie = cookieStore.get("user_data")?.value;
+  let isAdmin = false;
+  
+  if (userCookie) {
+    try {
+      const userData = JSON.parse(decodeURIComponent(userCookie));
+      isAdmin = userData.role === "admin" || userData.is_staff === true;
+    } catch (e) {
+      console.error("Error parseando cookie:", e);
+    }
+  }
 
   const totalProductos = productos.length;
   const stockBajo = productos.filter((p) => p.stock_total > 0 && p.stock_total < 5).length;
@@ -29,17 +45,19 @@ async function ProductosContent() {
           <h1 className="font-display text-3xl font-semibold text-ink">Productos</h1>
           <p className="text-slate-500">Gestión de inventario</p>
         </div>
-        <ProductoActions categorias={categorias} marcas={marcas} mode="create" />
+        {isAdmin && <ProductoActions categorias={categorias} marcas={marcas} mode="create" />}
       </div>
 
-      <div className="mb-8">
-        <CardGrid columns={4}>
-          <CardStat label="Total Productos" value={totalProductos} icon="📦" />
-          <CardStat label="Stock Bajo (<5)" value={stockBajo} icon="⚠️" />
-          <CardStat label="Sin Stock" value={sinStock} icon="🚫" />
-          <CardStat label="Valor Inventario" value={`$${valorInventario.toLocaleString()}`} icon="💰" />
-        </CardGrid>
-      </div>
+      {isAdmin && (
+        <div className="mb-8">
+          <CardGrid columns={4}>
+            <CardStat label="Total Productos" value={totalProductos} icon="📦" />
+            <CardStat label="Stock Bajo (<5)" value={stockBajo} icon="⚠️" />
+            <CardStat label="Sin Stock" value={sinStock} icon="🚫" />
+            <CardStat label="Valor Inventario" value={`$${valorInventario.toLocaleString()}`} icon="💰" />
+          </CardGrid>
+        </div>
+      )}
 
       <Card>
         <div className="overflow-x-auto">
@@ -51,14 +69,16 @@ async function ProductosContent() {
                 <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Marca</th>
                 <th className="px-4 py-3 text-right font-medium text-slate-500 dark:text-slate-400">Precio</th>
                 <th className="px-4 py-3 text-center font-medium text-slate-500 dark:text-slate-400">Stock</th>
-                <th className="px-4 py-3 text-center font-medium text-slate-500 dark:text-slate-400">Acciones</th>
+                {isAdmin && (
+                  <th className="px-4 py-3 text-center font-medium text-slate-500 dark:text-slate-400">Acciones</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {productos.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-slate-500">
-                    No hay productos. Haz clic en Agregar Producto para crear uno.
+                  <td colSpan={isAdmin ? 6 : 5} className="px-4 py-12 text-center text-slate-500">
+                    No hay productos.{isAdmin && " Haz clic en Agregar Producto para crear uno."}
                   </td>
                 </tr>
               ) : (
@@ -98,14 +118,16 @@ async function ProductosContent() {
                           {stock}
                         </span>
                       </td>
-                      <td className="px-4 py-4 text-center">
-                        <ProductoActions
-                          producto={producto}
-                          categorias={categorias}
-                          marcas={marcas}
-                          mode="edit"
-                        />
-                      </td>
+                      {isAdmin && (
+                        <td className="px-4 py-4 text-center">
+                          <ProductoActions
+                            producto={producto}
+                            categorias={categorias}
+                            marcas={marcas}
+                            mode="edit"
+                          />
+                        </td>
+                      )}
                     </tr>
                   );
                 })

@@ -16,9 +16,15 @@ export function Sidebar() {
     { href: "/marcas", label: "Marcas", icon: "🏷️", admin: true },
     { href: "/ventas", label: "Ventas", icon: "💰", admin: true },
     { href: "/compras", label: "Compras", icon: "🛒", admin: true },
+    { href: "/lista-deseos", label: "Lista de Deseos", icon: "❤️", requiresAuth: true },
+    { href: "/sobre-nosotros", label: "Sobre Nosotros", icon: "💬" }, 
   ];
 
-  const filteredItems = navItems.filter((item) => !item.admin || isAdmin);
+  const filteredItems = navItems.filter((item) => {
+    if (item.admin && !isAdmin) return false; 
+    if (item.requiresAuth && !user) return false; 
+    return true;
+  });
 
   return (
     <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-border transform transition-transform duration-300 lg:translate-x-0">
@@ -30,7 +36,7 @@ export function Sidebar() {
           </Link>
         </div>
 
-        {/* Menú de navegación */}
+        {/* Menú de navegación unificado */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {filteredItems.map((item) => (
             <Link
@@ -46,22 +52,10 @@ export function Sidebar() {
               {item.label}
             </Link>
           ))}
-
-          {/* Link de Lista de Deseos (Solo si está logueado) */}
-          {user && (
-            <Link
-              href="/lista-deseos"
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
-              <span>❤️</span>
-              Lista de Deseos
-            </Link>
-          )}
         </nav>
 
         {/* Footer del Sidebar (Auth + Tema) */}
         <div className="p-4 border-t border-border space-y-3">
-          
           {/* Lógica de Sesión */}
           {loading ? (
             <div className="text-center text-sm text-slate-500 py-2">Cargando...</div>
