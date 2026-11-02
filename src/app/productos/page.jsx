@@ -3,10 +3,13 @@ import { cookies } from "next/headers";
 import { getProductos, getCategorias, getMarcas } from "@/lib/api";
 import { Card, CardStat, CardGrid } from "@/components/Card";
 import { Boton } from "@/components/Boton";
+import Link from "next/link";
 import { ProductoForm } from "@/components/ProductoForm";
 import { Modal, ConfirmModal } from "@/components/Modal";
 import Cargando from "@/components/Cargando";
 import ProductoActions from "@/components/ProductoActions";
+
+export const instant = false;
 
 async function ProductosContent() {
   const [productos, categorias, marcas] = await Promise.all([
@@ -15,14 +18,10 @@ async function ProductosContent() {
     getMarcas().catch(() => []),
   ]);
 
-  console.log(">>> ProductosPage - productos recibidos:", productos.map(p => ({id: p.id, nombre: p.nombre, precio_lista: p.precio_lista, stock_total: p.stock_total, categoria: p.categoria, marca: p.marca})));
-
   const cookieStore = await cookies();
   const userCookie = cookieStore.get("user_data")?.value;
   let isAdmin = false;
   
-  console.log("Datos en user data", userCookie)
-
   if (userCookie) {
     try {
       const userData = JSON.parse(decodeURIComponent(userCookie));
@@ -95,7 +94,9 @@ async function ProductosContent() {
                             <img src={producto.imagen} alt="" className="w-10 h-10 rounded-lg object-cover" />
                           )}
                           <div>
-                            <p className="font-medium text-slate-900 dark:text-white">{producto.nombre}</p>
+                            <Link href={`/productos/${producto.id}`}>
+                              <p className="font-medium text-slate-900 dark-text-white">{producto.nombre}</p>
+                            </Link>
                             {producto.descripcion_corta && (
                               <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{producto.descripcion_corta}</p>
                             )}

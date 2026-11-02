@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -17,12 +18,14 @@ export default function RootLayout({ children }) {
     <html lang="es" className={`${head.variable} ${body.variable}`}>
       <body className="bg-field font-sans text-slate-800 antialiased min-h-screen">
         <ThemeProvider>
-          <AuthProvider>
-            <Sidebar />
-            <main className="lg:ml-64 mx-auto max-w-7xl px-5 py-8 md:px-10 md:py-12">
-              {children}
-            </main>
-          </AuthProvider>
+          <Suspense fallback={null}>
+            <AuthProvider>
+              <Sidebar />
+              <main className="lg:ml-64 mx-auto max-w-7xl px-5 py-8 md:px-10 md:py-12">
+                {children}
+              </main>
+            </AuthProvider>
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>

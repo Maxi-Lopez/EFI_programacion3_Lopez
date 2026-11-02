@@ -122,6 +122,7 @@ export const getListaDeseos = () => list(ENDPOINTS.read.usuarios.listaDeseos);
 export const getCategorias = () => list(ENDPOINTS.read.catalogo.categorias);
 export const getMarcas = () => list(ENDPOINTS.read.catalogo.marcas);
 export const getProductos = () => list(ENDPOINTS.read.catalogo.productos);
+export const getProducto = (id) => request(ENDPOINTS.read.catalogo.productos + id + "/");
 
 // Proveedores
 export const getProveedores = () => list(ENDPOINTS.read.proveedores.proveedores);
