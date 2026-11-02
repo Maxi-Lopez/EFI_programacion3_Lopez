@@ -21,6 +21,8 @@ async function ProductosContent() {
   const userCookie = cookieStore.get("user_data")?.value;
   let isAdmin = false;
   
+  console.log("Datos en user data", userCookie)
+
   if (userCookie) {
     try {
       const userData = JSON.parse(decodeURIComponent(userCookie));

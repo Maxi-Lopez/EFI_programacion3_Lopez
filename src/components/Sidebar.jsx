@@ -16,6 +16,7 @@ export function Sidebar() {
     { href: "/marcas", label: "Marcas", icon: "🏷️", admin: true },
     { href: "/ventas", label: "Ventas", icon: "💰", admin: true },
     { href: "/compras", label: "Compras", icon: "🛒", admin: true },
+    { href: "/proveedores", label: "Proveedores", icon: "🏢", admin: true },
     { href: "/lista-deseos", label: "Lista de Deseos", icon: "❤️", requiresAuth: true },
     { href: "/sobre-nosotros", label: "Sobre Nosotros", icon: "💬" }, 
   ];
