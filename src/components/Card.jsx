@@ -33,18 +33,19 @@ export function CardGrid({ className = "", children, columns = 3 }) {
   );
 }
 
-export function CardStat({ label, value, icon, trend, className = "" }) {
+export function CardStat({ label, value, icon, trend, className = "", children }) {
   return (
     <Card className={className}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
           <p className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
-          {trend && (
+          {trend !== undefined && trend !== null && trend !== 0 && (
             <p className={`mt-1 text-sm font-medium ${trend > 0 ? "text-green-600" : "text-red-600"}`}>
               {trend > 0 ? "↑" : "↓"} {Math.abs(trend)}%
             </p>
           )}
+          {children && <div className="mt-2">{children}</div>}
         </div>
         {icon && <div className="text-3xl">{icon}</div>}
       </div>

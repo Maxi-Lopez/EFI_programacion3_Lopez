@@ -6,6 +6,14 @@ import { getVentas, getCompras } from "@/lib/api";
 import { Card, CardStat, CardGrid } from "@/components/Card";
 import Cargando from "@/components/Cargando";
 
+function formatearTotal(total) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
+  }).format(Number(total || 0));
+}
+
 async function MovimientosContent() {
   const cookieStore = await cookies();
   const userCookie = cookieStore.get("user_data")?.value;
@@ -57,11 +65,10 @@ async function MovimientosContent() {
             label="Ventas"
             value={cantidadVentas}
             icon="💰"
-            trend={0}
             className="hover:shadow-lg transition-shadow"
           >
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Total: ${totalVentas.toLocaleString()}
+              Total: {formatearTotal(totalVentas)}
             </p>
           </CardStat>
         </Link>
@@ -74,11 +81,10 @@ async function MovimientosContent() {
             label="Compras"
             value={cantidadCompras}
             icon="🛒"
-            trend={0}
             className="hover:shadow-lg transition-shadow"
           >
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Total: ${totalCompras.toLocaleString()}
+              Total: {formatearTotal(totalCompras)}
             </p>
           </CardStat>
         </Link>
