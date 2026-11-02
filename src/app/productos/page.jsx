@@ -2,10 +2,7 @@ import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { getProductos, getCategorias, getMarcas } from "@/lib/api";
 import { Card, CardStat, CardGrid } from "@/components/Card";
-import { Boton } from "@/components/Boton";
 import Link from "next/link";
-import { ProductoForm } from "@/components/ProductoForm";
-import { Modal, ConfirmModal } from "@/components/Modal";
 import { BotonDeseo } from "@/components/BotonDeseo";
 import Cargando from "@/components/Cargando";
 import ProductoActions from "@/components/ProductoActions";
@@ -21,12 +18,15 @@ async function ProductosContent() {
 
   const cookieStore = await cookies();
   const userCookie = cookieStore.get("user_data")?.value;
+  
   let isAdmin = false;
+  let isAuth = false;
   
   if (userCookie) {
     try {
       const userData = JSON.parse(decodeURIComponent(userCookie));
       isAdmin = userData.role === "admin" || userData.is_staff === true;
+      isAuth = !!userData.username; 
     } catch (e) {
       console.error("Error parseando cookie:", e);
     }
@@ -67,7 +67,9 @@ async function ProductosContent() {
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">
                 <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Producto</th>
-                <th className="px-4 py-3 text-center font-medium text-slate-500 dark:text-slate-400">Favorito</th>
+                {isAuth && (
+                  <th className="px-4 py-3 text-center font-medium text-slate-500 dark:text-slate-400">Favorito</th>
+                )}
                 <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Categoría</th>
                 <th className="px-4 py-3 text-left font-medium text-slate-500 dark:text-slate-400">Marca</th>
                 <th className="px-4 py-3 text-right font-medium text-slate-500 dark:text-slate-400">Precio</th>
@@ -80,7 +82,7 @@ async function ProductosContent() {
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {productos.length === 0 ? (
                 <tr>
-                    <td colSpan={isAdmin ? 7 : 6} className="px-4 py-12 text-center text-slate-500">
+                  <td colSpan={isAdmin ? 7 : isAuth ? 6 : 5} className="px-4 py-12 text-center text-slate-500">
                     No hay productos.{isAdmin && " Haz clic en Agregar Producto para crear uno."}
                   </td>
                 </tr>
@@ -105,9 +107,13 @@ async function ProductosContent() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-center">
-                        <BotonDeseo productoId={producto.id} />
-                      </td>
+                      
+                      {isAuth && (
+                        <td className="px-4 py-4 text-center">
+                          <BotonDeseo productoId={producto.id} />
+                        </td>
+                      )}
+                      
                       <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
                         {producto.categoria?.nombre || "—"}
                       </td>
@@ -126,6 +132,7 @@ async function ProductosContent() {
                           {stock}
                         </span>
                       </td>
+                      
                       {isAdmin && (
                         <td className="px-4 py-4 text-center">
                           <ProductoActions

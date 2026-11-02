@@ -11,7 +11,9 @@ export function BotonTema() {
     setClientMounted(true);
   }, []);
 
-  if (!mounted || !clientMounted) return null;
+  if (!mounted || !clientMounted) {
+    return <div className="w-full h-[40px]"></div>;
+  }
 
   return (
     <button
