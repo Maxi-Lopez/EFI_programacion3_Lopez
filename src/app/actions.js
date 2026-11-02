@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { API_URL, ENDPOINTS, agregarListaDeseos, borrarListaDeseos } from "@/lib/api";
 import { getToken, getTokenPayload } from "@/lib/auth";
-import { loginSchema, productoSchema } from "@/schemas";
+import { loginSchema, registerSchema, productoSchema } from "@/schemas";
 
 async function requireAdmin() {
   const payload = await getTokenPayload();
@@ -72,6 +72,53 @@ export async function loginAction(formData) {
     });
   } catch {
   }
+
+  return { success: true };
+}
+
+export async function registerAction(formData) {
+  const rawData = {
+    username: formData.get("username"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    first_name: formData.get("first_name"),
+    last_name: formData.get("last_name"),
+    telefono: formData.get("telefono") || "",
+    dni: formData.get("dni") || "",
+  };
+
+  console.log("Iniciando registro para:", rawData.username);
+
+  const parsed = registerSchema.safeParse(rawData);
+  if (!parsed.success) {
+    console.log(">>> Zod error details:", parsed.error.flatten().fieldErrors);
+    return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
+  }
+
+  const registerUrl = `${API_URL}/api/usuarios/cliente/`;
+  console.log("Fetching to:", registerUrl);
+
+  let res;
+  try {
+    res = await fetch(registerUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed.data),
+      cache: "no-store",
+    });
+  } catch (fetchError) {
+    console.error("Error de red en registro:", fetchError);
+    return { error: "No se pudo conectar con la API (red)" };
+  }
+
+  console.log("Respuesta backend:", res.status, res.statusText);
+
+  if (!res) return { error: "No se pudo conectar con la API" };
+  if (res.status === 400) {
+    const errorData = await res.json().catch(() => ({}));
+    return { error: errorData.detail || "El usuario ya existe o datos inválidos" };
+  }
+  if (!res.ok) return { error: "Error del servidor" };
 
   return { success: true };
 }

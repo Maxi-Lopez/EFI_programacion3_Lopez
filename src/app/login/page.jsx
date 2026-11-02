@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/schemas";
 import { loginAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Toaster } from "sonner";
 
 const inputClass = "w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand focus:outline-2 focus:outline-brand/30";
@@ -107,6 +108,13 @@ export default function LoginPage() {
             Si la API estaba dormida, puede tardar hasta un minuto.
           </p>
         )}
+
+        <p className="mt-6 text-center text-sm text-slate-500">
+          ¿No tienes cuenta? <Link href="/register" className="text-brand hover:underline font-medium">Regístrate</Link>
+        </p>
+        <p className="mt-4 text-center text-sm text-slate-500">
+          <Link href="/" className="text-slate-400 hover:text-slate-600 hover:underline">Cancelar</Link>
+        </p>
       </form>
     </div>
   );

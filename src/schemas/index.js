@@ -5,6 +5,16 @@ export const loginSchema = z.object({
   password: z.string().min(1, "La contraseña es obligatoria"),
 });
 
+export const registerSchema = z.object({
+  username: z.string().min(3, "Mínimo 3 caracteres").max(150),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Mínimo 6 caracteres"),
+  first_name: z.string().min(1, "El nombre es obligatorio").max(150),
+  last_name: z.string().min(1, "El apellido es obligatorio").max(150),
+  telefono: z.string().optional().or(z.literal("")),
+  dni: z.string().optional().or(z.literal("")),
+});
+
 export const productoSchema = z.object({
   nombre: z.string().min(2, "Mínimo 2 caracteres").max(100),
   sku: z.string().min(1, "El SKU es obligatorio").max(100),

@@ -62,7 +62,7 @@ export function Sidebar() {
           ) : user ? (
             <div>
               <p className="px-3 text-xs text-slate-500 dark:text-slate-400 mb-1">
-                {user.username} {isAdmin && "(Admin)"}
+                👤 {user.username} <span className="font-bold text-brand">{isAdmin ? "(Administrador)" : "(Cliente)"}</span>
               </p>
               <button
                 onClick={logout}
