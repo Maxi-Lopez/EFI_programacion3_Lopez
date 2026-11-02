@@ -12,8 +12,6 @@ export function Sidebar() {
 
   const navItems = [
     { href: "/productos", label: "Productos", icon: "📦" },
-    { href: "/categorias", label: "Categorías", icon: "📂", admin: true },
-    { href: "/marcas", label: "Marcas", icon: "🏷️", admin: true },
     { href: "/ventas", label: "Ventas", icon: "💰", admin: true },
     { href: "/compras", label: "Compras", icon: "🛒", admin: true },
     { href: "/proveedores", label: "Proveedores", icon: "🏢", admin: true },

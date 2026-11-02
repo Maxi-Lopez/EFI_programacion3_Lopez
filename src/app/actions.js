@@ -156,17 +156,25 @@ async function llamar(path, opciones = {}) {
   }).catch(() => null);
 }
 
+function parseOptionalNumber(value) {
+  const num = Number(value);
+  return isNaN(num) ? undefined : num;
+}
+
 export async function crearProductoAction(formData) {
   const authError = await requireAdmin();
   if (authError) return authError;
+
+  const categoriaRaw = formData.get("categoria");
+  const marcaRaw = formData.get("marca");
 
   const rawData = {
     nombre: formData.get("nombre"),
     descripcion_corta: formData.get("descripcion") || "",
     precio_lista: Number(formData.get("precio")),
     stock_total: Number(formData.get("stock")),
-    categoria: Number(formData.get("categoria")),
-    marca: Number(formData.get("marca")),
+    categoria: parseOptionalNumber(categoriaRaw),
+    marca: parseOptionalNumber(marcaRaw),
     imagen: formData.get("imagen") || undefined,
     sku: formData.get("sku") || `SKU-${Date.now()}`,
   };
@@ -199,6 +207,21 @@ export async function crearProductoAction(formData) {
       return { detail: text || "Error desconocido del servidor" };
     });
     console.log(">>> Error del backend al crear producto:", errorData);
+    if (res.status === 400 && errorData && typeof errorData === "object") {
+      const fields = {};
+      Object.entries(errorData).forEach(([key, messages]) => {
+        if (Array.isArray(messages) && messages.length > 0) {
+          let msg = messages[0];
+          if (key === "sku" && typeof msg === "string" && msg.includes("already exists")) {
+            msg = "Ya existe un producto con ese SKU";
+          }
+          fields[key] = [msg];
+        }
+      });
+      if (Object.keys(fields).length > 0) {
+        return { error: "Error de validación", fields };
+      }
+    }
     return { error: JSON.stringify(errorData) };
   }
 
@@ -213,14 +236,17 @@ export async function editarProductoAction(formData) {
   console.log(">>> editarProductoAction recibido:", Object.fromEntries(formData.entries()));
 
   const id = formData.get("id");
+  const categoriaRaw = formData.get("categoria");
+  const marcaRaw = formData.get("marca");
+
   const rawData = {
     sku: formData.get("sku"),
     nombre: formData.get("nombre"),
     descripcion_corta: formData.get("descripcion") || "",
     precio_lista: Number(formData.get("precio")),
     stock_total: Number(formData.get("stock")),
-    categoria: Number(formData.get("categoria")),
-    marca: Number(formData.get("marca")),
+    categoria: parseOptionalNumber(categoriaRaw),
+    marca: parseOptionalNumber(marcaRaw),
     imagen: formData.get("imagen") || undefined,
   };
 
@@ -248,6 +274,21 @@ export async function editarProductoAction(formData) {
       return { detail: text || "Error desconocido del servidor" };
     });
     console.log(">>> Error del backend al editar producto:", errorData);
+    if (res.status === 400 && errorData && typeof errorData === "object") {
+      const fields = {};
+      Object.entries(errorData).forEach(([key, messages]) => {
+        if (Array.isArray(messages) && messages.length > 0) {
+          let msg = messages[0];
+          if (key === "sku" && typeof msg === "string" && msg.includes("already exists")) {
+            msg = "Ya existe un producto con ese SKU";
+          }
+          fields[key] = [msg];
+        }
+      });
+      if (Object.keys(fields).length > 0) {
+        return { error: "Error de validación", fields };
+      }
+    }
     return { error: JSON.stringify(errorData) };
   }
 
@@ -267,6 +308,90 @@ export async function borrarProductoAction(formData) {
 
   revalidatePath("/productos");
   return { success: true };
+}
+
+export async function crearCategoriaAction(formData) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
+  const nombre = formData.get("nombre");
+  if (!nombre || !nombre.trim()) {
+    return { error: "El nombre es requerido", fields: { nombre: ["El nombre es requerido"] } };
+  }
+
+  const res = await llamar(ENDPOINTS.write.catalogo.categorias, {
+    method: "POST",
+    body: JSON.stringify({ nombre: nombre.trim() }),
+  });
+
+  if (!res) return { error: "Sin conexión con la API" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok) {
+    const errorData = await res.json().catch(async () => {
+      const text = await res.text().catch(() => "");
+      return { detail: text || "Error desconocido del servidor" };
+    });
+    console.log(">>> Error del backend al crear categoría:", errorData);
+    if (res.status === 400 && errorData && typeof errorData === "object") {
+      const fields = {};
+      Object.entries(errorData).forEach(([key, messages]) => {
+        if (Array.isArray(messages) && messages.length > 0) {
+          fields[key] = [messages[0]];
+        }
+      });
+      if (Object.keys(fields).length > 0) {
+        return { error: "Error de validación", fields };
+      }
+    }
+    return { error: JSON.stringify(errorData) };
+  }
+
+  const categoria = await res.json();
+  revalidatePath("/productos");
+  revalidatePath("/categorias");
+  return { success: true, categoria };
+}
+
+export async function crearMarcaAction(formData) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
+  const nombre = formData.get("nombre");
+  if (!nombre || !nombre.trim()) {
+    return { error: "El nombre es requerido", fields: { nombre: ["El nombre es requerido"] } };
+  }
+
+  const res = await llamar(ENDPOINTS.write.catalogo.marcas, {
+    method: "POST",
+    body: JSON.stringify({ nombre: nombre.trim() }),
+  });
+
+  if (!res) return { error: "Sin conexión con la API" };
+  if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
+  if (!res.ok) {
+    const errorData = await res.json().catch(async () => {
+      const text = await res.text().catch(() => "");
+      return { detail: text || "Error desconocido del servidor" };
+    });
+    console.log(">>> Error del backend al crear marca:", errorData);
+    if (res.status === 400 && errorData && typeof errorData === "object") {
+      const fields = {};
+      Object.entries(errorData).forEach(([key, messages]) => {
+        if (Array.isArray(messages) && messages.length > 0) {
+          fields[key] = [messages[0]];
+        }
+      });
+      if (Object.keys(fields).length > 0) {
+        return { error: "Error de validación", fields };
+      }
+    }
+    return { error: JSON.stringify(errorData) };
+  }
+
+  const marca = await res.json();
+  revalidatePath("/productos");
+  revalidatePath("/marcas");
+  return { success: true, marca };
 }
 
 export async function agregarDeseoAction(productoId) {

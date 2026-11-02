@@ -1,15 +1,36 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productoSchema } from "@/schemas";
 import { Boton } from "./Boton";
 import { Input } from "./Input";
-import { crearProductoAction, editarProductoAction } from "@/app/actions";
+import { Modal } from "./Modal";
+import { crearProductoAction, editarProductoAction, crearCategoriaAction, crearMarcaAction } from "@/app/actions";
 
 export function ProductoForm({ categorias = [], marcas = [], initialData, onSuccess, onCancel }) {
   const isEditing = !!initialData;
+
+  const [isCreatingCategoria, setIsCreatingCategoria] = useState(false);
+  const [isCreatingMarca, setIsCreatingMarca] = useState(false);
+  const [nuevaCategoriaNombre, setNuevaCategoriaNombre] = useState("");
+  const [nuevaMarcaNombre, setNuevaMarcaNombre] = useState("");
+  const [creandoCategoria, setCreandoCategoria] = useState(false);
+  const [creandoMarca, setCreandoMarca] = useState(false);
+  const [errorCategoria, setErrorCategoria] = useState("");
+  const [errorMarca, setErrorMarca] = useState("");
+
+  const [categoriasLocales, setCategoriasLocales] = useState(categorias);
+  const [marcasLocales, setMarcasLocales] = useState(marcas);
+
+  useEffect(() => {
+    setCategoriasLocales(categorias);
+  }, [categorias]);
+
+  useEffect(() => {
+    setMarcasLocales(marcas);
+  }, [marcas]);
 
   const getDefaultValues = (data) => {
     if (!data) {
@@ -41,11 +62,16 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
     handleSubmit,
     reset,
     setValue,
+    setError,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(productoSchema),
     defaultValues: getDefaultValues(initialData),
   });
+
+  const watchedCategoria = watch("categoria");
+  const watchedMarca = watch("marca");
 
   useEffect(() => {
     if (initialData) {
@@ -61,6 +87,76 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
       });
     }
   }, [initialData, reset]);
+
+  const handleCrearCategoria = async () => {
+    console.log(">>> handleCrearCategoria: iniciando, nombre:", nuevaCategoriaNombre);
+    if (!nuevaCategoriaNombre.trim()) {
+      setErrorCategoria("El nombre es requerido");
+      return;
+    }
+    setCreandoCategoria(true);
+    setErrorCategoria("");
+
+    const formData = new FormData();
+    formData.append("nombre", nuevaCategoriaNombre.trim());
+
+    console.log(">>> handleCrearCategoria: llamando Server Action...");
+    const result = await crearCategoriaAction(formData);
+    console.log(">>> handleCrearCategoria: respuesta Server Action:", result);
+
+    if (result.success && result.categoria) {
+      console.log(">>> handleCrearCategoria: éxito, nueva categoria:", result.categoria);
+      setCategoriasLocales((prev) => {
+        const exists = prev.some((c) => c.id === result.categoria.id);
+        return exists ? prev : [...prev, result.categoria];
+      });
+      setIsCreatingCategoria(false);
+      setNuevaCategoriaNombre("");
+      setValue("categoria", result.categoria.id, { shouldValidate: true });
+    } else if (result.fields?.nombre?.[0]) {
+      console.log(">>> handleCrearCategoria: error de validación:", result.fields.nombre[0]);
+      setErrorCategoria(result.fields.nombre[0]);
+    } else {
+      console.log(">>> handleCrearCategoria: error:", result.error);
+      setErrorCategoria(result.error || "Error al crear categoría");
+    }
+    setCreandoCategoria(false);
+  };
+
+  const handleCrearMarca = async () => {
+    console.log(">>> handleCrearMarca: iniciando, nombre:", nuevaMarcaNombre);
+    if (!nuevaMarcaNombre.trim()) {
+      setErrorMarca("El nombre es requerido");
+      return;
+    }
+    setCreandoMarca(true);
+    setErrorMarca("");
+
+    const formData = new FormData();
+    formData.append("nombre", nuevaMarcaNombre.trim());
+
+    console.log(">>> handleCrearMarca: llamando Server Action...");
+    const result = await crearMarcaAction(formData);
+    console.log(">>> handleCrearMarca: respuesta Server Action:", result);
+
+    if (result.success && result.marca) {
+      console.log(">>> handleCrearMarca: éxito, nueva marca:", result.marca);
+      setMarcasLocales((prev) => {
+        const exists = prev.some((m) => m.id === result.marca.id);
+        return exists ? prev : [...prev, result.marca];
+      });
+      setIsCreatingMarca(false);
+      setNuevaMarcaNombre("");
+      setValue("marca", result.marca.id, { shouldValidate: true });
+    } else if (result.fields?.nombre?.[0]) {
+      console.log(">>> handleCrearMarca: error de validación:", result.fields.nombre[0]);
+      setErrorMarca(result.fields.nombre[0]);
+    } else {
+      console.log(">>> handleCrearMarca: error:", result.error);
+      setErrorMarca(result.error || "Error al crear marca");
+    }
+    setCreandoMarca(false);
+  };
 
   const onSubmit = async (data) => {
     console.log(">>> ProductoForm onSubmit data:", data);
@@ -81,12 +177,134 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
     } else if (result.fields) {
       Object.entries(result.fields).forEach(([field, messages]) => {
         if (messages?.[0]) {
-          setValue(field, data[field], { shouldValidate: true });
+          setError(field, { type: "server", message: messages[0] });
         }
       });
     }
     return result;
   };
+
+  const renderCategoriaSelect = () => {
+    if (isCreatingCategoria) {
+      return (
+        <div className="space-y-2">
+          <input type="hidden" {...register("categoria")} />
+          <Input
+            label="Nueva Categoría"
+            value={nuevaCategoriaNombre}
+            onChange={(e) => setNuevaCategoriaNombre(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleCrearCategoria()}
+            error={errorCategoria}
+            placeholder="Nombre de la categoría"
+            autoFocus
+          />
+          <div className="flex gap-2">
+            <Boton type="button" variant="primary" size="sm" onClick={handleCrearCategoria} loading={creandoCategoria}>
+              Crear
+            </Boton>
+            <Boton type="button" variant="ghost" size="sm" onClick={() => setIsCreatingCategoria(false)}>
+              Cancelar
+            </Boton>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <select
+          {...register("categoria", { valueAsNumber: Number })}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val === "__new__") {
+              setIsCreatingCategoria(true);
+              setValue("categoria", "", { shouldValidate: true });
+            }
+          }}
+          className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+            ${errors.categoria ? "border-red-500 focus:ring-red-500" : "border-slate-300 dark:border-slate-600"}
+            dark:bg-slate-800 dark:text-slate-100`}
+          style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}
+        >
+          <option value="" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>Seleccionar categoría</option>
+          {categoriasLocales.map((cat) => (
+            <option key={cat.id} value={cat.id} style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>
+              {cat.nombre}
+            </option>
+          ))}
+          <option value="__new__" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-primary)' }}>
+            + Nueva Categoría
+          </option>
+        </select>
+        {errors.categoria && <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.categoria.message}</p>}
+      </div>
+    );
+  };
+
+  const renderMarcaSelect = () => {
+    if (isCreatingMarca) {
+      return (
+        <div className="space-y-2">
+          <input type="hidden" {...register("marca")} />
+          <Input
+            label="Nueva Marca"
+            value={nuevaMarcaNombre}
+            onChange={(e) => setNuevaMarcaNombre(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleCrearMarca()}
+            error={errorMarca}
+            placeholder="Nombre de la marca"
+            autoFocus
+          />
+          <div className="flex gap-2">
+            <Boton type="button" variant="primary" size="sm" onClick={handleCrearMarca} loading={creandoMarca}>
+              Crear
+            </Boton>
+            <Boton type="button" variant="ghost" size="sm" onClick={() => setIsCreatingMarca(false)}>
+              Cancelar
+            </Boton>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <select
+          {...register("marca", { valueAsNumber: Number })}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val === "__new__") {
+              setIsCreatingMarca(true);
+              setValue("marca", "", { shouldValidate: true });
+            }
+          }}
+          className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+            ${errors.marca ? "border-red-500 focus:ring-red-500" : "border-slate-300 dark:border-slate-600"}
+            dark:bg-slate-800 dark:text-slate-100`}
+          style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}
+        >
+          <option value="" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>Seleccionar marca</option>
+          {marcasLocales.map((marca) => (
+            <option key={marca.id} value={marca.id} style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>
+              {marca.nombre}
+            </option>
+          ))}
+          <option value="__new__" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-primary)' }}>
+            + Nueva Marca
+          </option>
+        </select>
+        {errors.marca && <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.marca.message}</p>}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    console.log(">>> useEffect categoria watched:", watchedCategoria);
+  }, [watchedCategoria]);
+
+  useEffect(() => {
+    console.log(">>> useEffect marca watched:", watchedMarca);
+  }, [watchedMarca]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -141,42 +359,14 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
             Categoría <span className="text-red-500">*</span>
           </label>
-          <select
-            {...register("categoria", { valueAsNumber: Number })}
-            className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
-              ${errors.categoria ? "border-red-500 focus:ring-red-500" : "border-slate-300 dark:border-slate-600"}
-              dark:bg-slate-800 dark:text-slate-100`}
-            style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}
-          >
-            <option value="" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>Seleccionar categoría</option>
-            {categorias.map((cat) => (
-              <option key={cat.id} value={cat.id} style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>
-                {cat.nombre}
-              </option>
-            ))}
-          </select>
-          {errors.categoria && <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.categoria.message}</p>}
+          {renderCategoriaSelect()}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
             Marca <span className="text-red-500">*</span>
           </label>
-          <select
-            {...register("marca", { valueAsNumber: Number })}
-            className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
-              ${errors.marca ? "border-red-500 focus:ring-red-500" : "border-slate-300 dark:border-slate-600"}
-              dark:bg-slate-800 dark:text-slate-100`}
-            style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}
-          >
-            <option value="" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>Seleccionar marca</option>
-            {marcas.map((marca) => (
-              <option key={marca.id} value={marca.id} style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}>
-                {marca.nombre}
-              </option>
-            ))}
-          </select>
-          {errors.marca && <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.marca.message}</p>}
+          {renderMarcaSelect()}
         </div>
       </div>
 
