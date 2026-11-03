@@ -3,7 +3,7 @@ import { getToken } from "@/lib/auth";
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 function getApiUrl() {
-  return API_URL;
+  return (API_URL || "").replace(/\/+$/, "");
 }
 
 export const ENDPOINTS = {
@@ -11,66 +11,66 @@ export const ENDPOINTS = {
   read: {
     // Auth
     auth: {
-      login: "/api/token/",
-      refresh: "/api/token/refresh/",
+      login: "/token/",
+      refresh: "/token/refresh/",
     },
     // Usuarios
     usuarios: {
-      clientes: "/api/usuarios/cliente-get/",
-      vendedores: "/api/usuarios/vendedor-get/",
-      listaDeseos: "/api/usuarios/lista-deseos-get/",
+      clientes: "/usuarios/cliente-get/",
+      vendedores: "/usuarios/vendedor-get/",
+      listaDeseos: "/usuarios/lista-deseos-get/",
     },
     // Catálogo
     catalogo: {
-      categorias: "/api/catalogo/categoria-get/",
-      marcas: "/api/catalogo/marca-get/",
-      productos: "/api/catalogo/producto-get/",
+      categorias: "/catalogo/categoria-get/",
+      marcas: "/catalogo/marca-get/",
+      productos: "/catalogo/producto-get/",
     },
     // Proveedores
     proveedores: {
-      proveedores: "/api/proveedores/proveedor-get/",
+      proveedores: "/proveedores/proveedor-get/",
     },
     // Compras y Ventas
     compras: {
-      compras: "/api/compras/compra-list/",
+      compras: "/compras/compra-list/",
     },
     ventas: {
-      ventas: "/api/ventas/venta-get/",
+      ventas: "/ventas/venta-get/",
     },
   },
 
   write: {
     // Auth
     auth: {
-      login: "/api/token/",
-      refresh: "/api/token/refresh/",
+      login: "/token/",
+      refresh: "/token/refresh/",
     },
     // Usuarios
     usuarios: {
-      clientes: "/api/usuarios/cliente/",
-      listaDeseos: "/api/usuarios/lista-deseos/",
-      listaDeseosId: (id) => `/api/usuarios/lista-deseos/${id}/`,
+      clientes: "/usuarios/cliente/",
+      listaDeseos: "/usuarios/lista-deseos/",
+      listaDeseosId: (id) => `/usuarios/lista-deseos/${id}/`,
     },
     // Catálogo
     catalogo: {
-      categorias: "/api/catalogo/categoria/",
-      categoriasId: (id) => `/api/catalogo/categoria/${id}/`,
-      marcas: "/api/catalogo/marca/",
-      marcasId: (id) => `/api/catalogo/marca/${id}/`,
-      productos: "/api/catalogo/producto/",
-      productosId: (id) => `/api/catalogo/producto/${id}/`,
+      categorias: "/catalogo/categoria/",
+      categoriasId: (id) => `/catalogo/categoria/${id}/`,
+      marcas: "/catalogo/marca/",
+      marcasId: (id) => `/catalogo/marca/${id}/`,
+      productos: "/catalogo/producto/",
+      productosId: (id) => `/catalogo/producto/${id}/`,
     },
     // Proveedores
     proveedores: {
-      proveedores: "/api/proveedores/proveedor/",
-      proveedoresId: (id) => `/api/proveedores/proveedor/${id}/`,
+      proveedores: "/proveedores/proveedor/",
+      proveedoresId: (id) => `/proveedores/proveedor/${id}/`,
     },
     // Compras y Ventas
     compras: {
-      comprasId: (id) => `/api/compras/compra/${id}/`,
+      comprasId: (id) => `/compras/compra/${id}/`,
     },
     ventas: {
-      ventasId: (id) => `/api/ventas/venta/${id}/`,
+      ventasId: (id) => `/ventas/venta/${id}/`,
     },
   },
 };
