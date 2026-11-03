@@ -7,6 +7,7 @@ import { BotonDeseo } from "@/components/BotonDeseo";
 import Cargando from "@/components/Cargando";
 import ProductoActions from "@/components/ProductoActions";
 
+export const dynamic = 'force-dynamic';
 export const instant = false;
 
 async function ProductosContent() {

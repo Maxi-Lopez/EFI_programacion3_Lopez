@@ -7,6 +7,8 @@ import { Boton } from "@/components/Boton";
 import ProveedorActions from "@/components/ProveedorActions";
 import Cargando from "@/components/Cargando";
 
+export const dynamic = 'force-dynamic';
+
 function formatearCuit(cuit) {
   if (!cuit) return "";
   const limpio = cuit.replace(/\D/g, "");

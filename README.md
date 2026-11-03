@@ -4,7 +4,8 @@ Sistema de gestion de inventario y ventas para tienda de computacion y gaming. P
 
 ## Enlaces
 
-- **API del Backend**: [URL_API_BACKEND]
+- **Frontend (Vercel)**: https://efi-programacion3-lopez-woad.vercel.app
+- **API del Backend (Render)**: https://efi-ingenieria-nexusgamer.onrender.com
 - **Tablero Kanban**: [URL_TABLER0_KANBAN]
 
 ## Instalacion y ejecucion local
@@ -25,7 +26,7 @@ npm install
 3. Configurar variables de entorno. Crear un archivo `.env.local` en la raiz del proyecto con el siguiente contenido:
 
 ```
-NEXT_PUBLIC_API_URL=[URL_API_BACKEND]
+NEXT_PUBLIC_API_URL=https://efi-ingenieria-nexusgamer.onrender.com/api
 ```
 
 4. Ejecutar el servidor de desarrollo:
@@ -80,10 +81,10 @@ npm run test
 
 ## Despliegue
 
-- **Frontend**: Desplegado en Vercel. [URL_VERCEL]
-- **Backend**: Desplegado en Render o Supabase. [URL_BACKEND_DESPLIEGUE]
+- **Frontend**: Desplegado en Vercel. https://efi-programacion3-lopez-woad.vercel.app
+- **Backend**: Desplegado en Render. https://efi-ingenieria-nexusgamer.onrender.com
 
-Para desplegar el frontend en Vercel, conectar el repositorio de GitHub y configurar la variable de entorno `NEXT_PUBLIC_API_URL` con la URL del backend en produccion.
+Para desplegar el frontend en Vercel, conectar el repositorio de GitHub y configurar la variable de entorno `NEXT_PUBLIC_API_URL` con la URL del backend en produccion: `https://efi-ingenieria-nexusgamer.onrender.com/api`.
 
 ## Estructura del proyecto
 
