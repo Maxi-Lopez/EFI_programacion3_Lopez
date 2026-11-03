@@ -10,11 +10,24 @@ import ProductoActions from "@/components/ProductoActions";
 export const instant = false;
 
 async function ProductosContent() {
-  const [productos, categorias, marcas] = await Promise.all([
-    getProductos().catch(() => []),
-    getCategorias().catch(() => []),
-    getMarcas().catch(() => []),
-  ]);
+  let productos = [];
+  let categorias = [];
+  let marcas = [];
+  let errorCarga = null;
+
+  try {
+    const [prodData, catData, marData] = await Promise.all([
+      getProductos(),
+      getCategorias(),
+      getMarcas(),
+    ]);
+    productos = prodData;
+    categorias = catData;
+    marcas = marData;
+  } catch (error) {
+    console.error("Error cargando datos en el servidor:", error);
+    errorCarga = error.message || "Error al conectar con el backend";
+  }
 
   const cookieStore = await cookies();
   const userCookie = cookieStore.get("user_data")?.value;
@@ -50,6 +63,14 @@ async function ProductosContent() {
         {isAdmin && <ProductoActions categorias={categorias} marcas={marcas} mode="create" />}
       </div>
 
+      {errorCarga && (
+        <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300">
+          <p className="font-bold">Error al cargar los datos:</p>
+          <p className="text-sm">{errorCarga}</p>
+          <p className="text-xs mt-2">Verificá que el backend en Render esté despierto.</p>
+        </div>
+      )}
+
       {isAdmin && (
         <div className="mb-8">
           <CardGrid columns={4}>
@@ -83,7 +104,10 @@ async function ProductosContent() {
               {productos.length === 0 ? (
                 <tr>
                   <td colSpan={isAdmin ? 7 : isAuth ? 6 : 5} className="px-4 py-12 text-center text-slate-500">
-                    No hay productos.{isAdmin && " Haz clic en Agregar Producto para crear uno."}
+                    {errorCarga 
+                      ? "No se pudieron cargar los productos. Revisá el error de arriba." 
+                      : `No hay productos.${isAdmin ? " Haz clic en Agregar Producto para crear uno." : ""}`
+                    }
                   </td>
                 </tr>
               ) : (
