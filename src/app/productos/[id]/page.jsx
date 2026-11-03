@@ -4,8 +4,6 @@ import { Card } from "@/components/Card";
 import { Boton } from "@/components/Boton";
 import { getProducto } from "@/lib/api";
 
-export const instant = false;
-
 export default async function ProductoPage({ params }) {
   const { id } = await params;
   const producto = await getProducto(id);

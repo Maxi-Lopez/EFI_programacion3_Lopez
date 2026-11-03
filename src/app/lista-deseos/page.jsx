@@ -2,8 +2,6 @@ import { getListaDeseos } from "@/lib/api";
 import { Card, CardGrid } from "@/components/Card";
 import Link from "next/link";
 
-export const instant = false;
-
 export default async function ListaDeseosPage() {
   const items = await getListaDeseos();
   const productos = items.map((item) => item.producto).filter(Boolean);
