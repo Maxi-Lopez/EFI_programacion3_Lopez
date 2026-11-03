@@ -4,7 +4,6 @@ import { Card } from "@/components/Card";
 import { Boton } from "@/components/Boton";
 import { getProducto } from "@/lib/api";
 
-export const dynamic = 'force-dynamic';
 export const instant = false;
 
 export default async function ProductoPage({ params }) {
