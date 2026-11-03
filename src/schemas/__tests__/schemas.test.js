@@ -25,6 +25,7 @@ describe("Zod Schemas", () => {
     it("valida producto completo con marca y categoria", () => {
       const result = productoSchema.safeParse({
         nombre: "RTX 4090",
+        sku: "TEST-SKU-001",
         descripcion: "Tarjeta gráfica",
         precio: 199999,
         stock: 5,

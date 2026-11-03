@@ -10,7 +10,7 @@ describe("API Library", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-    process.env.NEXT_PUBLIC_API_URL = "http://127.0.0.1:8000";
+    process.env.NEXT_PUBLIC_API_URL = "http://127.0.0.1:8000/api";
   });
 
   it("getProductos llama endpoint real /api/catalogo/producto-get/", async () => {

@@ -2,7 +2,7 @@ import { getToken } from "@/lib/auth";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-function getApiUrl() {
+export function getApiUrl() {
   return (API_URL || "").replace(/\/+$/, "");
 }
 

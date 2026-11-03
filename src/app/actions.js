@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { API_URL, ENDPOINTS, agregarListaDeseos, borrarListaDeseos } from "@/lib/api";
+import { API_URL, ENDPOINTS, getApiUrl, agregarListaDeseos, borrarListaDeseos } from "@/lib/api";
 import { getToken, getTokenPayload } from "@/lib/auth";
 import { loginSchema, registerSchema, productoSchema, proveedorSchema } from "@/schemas";
 
@@ -102,7 +102,7 @@ export async function registerAction(formData) {
     return { error: "Datos inválidos", fields: parsed.error.flatten().fieldErrors };
   }
 
-  const registerUrl = `${API_URL}/api/usuarios/cliente/`;
+  const registerUrl = `${getApiUrl()}/usuarios/cliente/`;
 
   let res;
   try {
@@ -135,7 +135,7 @@ export async function logoutAction() {
 
 async function llamar(path, opciones = {}) {
   const token = await getToken();
-  return fetch(`${API_URL}${path}`, {
+  return fetch(`${getApiUrl()}${path}`, {
     ...opciones,
     headers: {
       "Content-Type": "application/json",
@@ -374,7 +374,7 @@ export async function crearMarcaAction(formData) {
 export async function agregarDeseoAction(productoId) {
   const token = await getToken();
   const productoIdNum = Number(productoId);
-  const res = await fetch(`${API_URL}/api/usuarios/lista-deseos/`, {
+  const res = await fetch(`${getApiUrl()}/usuarios/lista-deseos/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -404,7 +404,7 @@ export async function quitarDeseoAction(deseoId) {
     return { error: "ID de deseo requerido" };
   }
   const token = await getToken();
-  const res = await fetch(`${API_URL}/api/usuarios/lista-deseos/${deseoId}/`, {
+  const res = await fetch(`${getApiUrl()}/usuarios/lista-deseos/${deseoId}/`, {
     method: "DELETE",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     cache: "no-store",
@@ -440,7 +440,7 @@ export async function getWishlistAction() {
   let all = [];
 
   while (true) {
-    const res = await fetch(`${API_URL}/api/usuarios/lista-deseos-get/?page=${page}`, {
+    const res = await fetch(`${getApiUrl()}/usuarios/lista-deseos-get/?page=${page}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       cache: "no-store",
     });
