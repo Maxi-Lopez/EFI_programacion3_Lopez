@@ -384,12 +384,15 @@ export async function agregarDeseoAction(productoId) {
     cache: "no-store",
   });
   if (!res) return { error: "Sin conexión" };
+  console.log("[agregarDeseoAction] status:", res.status);
   if (res.status === 401 || res.status === 403) return { error: "Sesión vencida" };
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
+    console.log("[agregarDeseoAction] error:", errorData);
     return { error: errorData.detail || "No se pudo agregar a deseos" };
   }
   const data = await res.json();
+  console.log("[agregarDeseoAction] success:", data);
   const deseoId = data.id ?? data.producto_id ?? data.producto?.id;
   revalidatePath("/productos");
   revalidatePath("/lista-deseos");

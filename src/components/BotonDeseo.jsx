@@ -11,7 +11,11 @@ export function BotonDeseo({ productoId }) {
   // 2. El hook useCallback
   const handleClick = useCallback(async () => {
     setLoading(true);
-    await toggleDeseo(productoId);
+    const result = await toggleDeseo(productoId);
+    if (result?.error) {
+      console.error("[BotonDeseo] Error:", result.error);
+      alert("Error: " + result.error);
+    }
     setLoading(false);
   }, [productoId, toggleDeseo]);
 
