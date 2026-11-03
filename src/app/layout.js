@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { Sidebar } from "@/components/Sidebar";
+import { MobileHeader } from "@/components/MobileHeader";
+import { SidebarProvider } from "@/context/SidebarContext";
 
 const head = Bricolage_Grotesque({ subsets: ["latin"], variable: "--f-head" });
 const body = Figtree({ subsets: ["latin"], variable: "--f-body" });
@@ -20,10 +22,13 @@ export default function RootLayout({ children }) {
         <ThemeProvider>
           <Suspense fallback={null}>
             <AuthProvider>
-              <Sidebar />
-              <main className="lg:ml-64 mx-auto max-w-7xl px-5 py-8 md:px-10 md:py-12">
-                {children}
-              </main>
+              <SidebarProvider>
+                <MobileHeader />
+                <Sidebar />
+                <main className="lg:ml-64 pt-16 lg:pt-0 mx-auto max-w-7xl px-5 py-8 md:px-10 md:py-12 w-full">
+                  {children}
+                </main>
+              </SidebarProvider>
             </AuthProvider>
           </Suspense>
         </ThemeProvider>
