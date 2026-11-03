@@ -7,7 +7,10 @@ import { BotonDeseo } from "@/components/BotonDeseo";
 import Cargando from "@/components/Cargando";
 import ProductoActions from "@/components/ProductoActions";
 
-async function ProductosContent() {
+async function ProductosContent({ searchParams }) {
+  const params = await searchParams;
+  const filter = params?.filter;
+
   let productos = [];
   let categorias = [];
   let marcas = [];
@@ -29,15 +32,15 @@ async function ProductosContent() {
 
   const cookieStore = await cookies();
   const userCookie = cookieStore.get("user_data")?.value;
-  
+
   let isAdmin = false;
   let isAuth = false;
-  
+
   if (userCookie) {
     try {
       const userData = JSON.parse(decodeURIComponent(userCookie));
       isAdmin = userData.role === "admin" || userData.is_staff === true;
-      isAuth = !!userData.username; 
+      isAuth = !!userData.username;
     } catch (e) {
       console.error("Error parseando cookie:", e);
     }
@@ -50,6 +53,13 @@ async function ProductosContent() {
     const precio = parseFloat(p.precio_lista || p.precio_oferta || p.precio || "0");
     return acc + precio * (p.stock_total || 0);
   }, 0);
+
+  let productosFiltrados = productos;
+  if (filter === "low-stock") {
+    productosFiltrados = productos.filter((p) => p.stock_total > 0 && p.stock_total < 5);
+  } else if (filter === "out-of-stock") {
+    productosFiltrados = productos.filter((p) => p.stock_total === 0);
+  }
 
   return (
     <div>
@@ -67,16 +77,43 @@ async function ProductosContent() {
           <p className="text-sm">{errorCarga}</p>
           <p className="text-xs mt-2">Verificá que el backend en Render esté despierto.</p>
         </div>
-      )}
+)}
 
       {isAdmin && (
         <div className="mb-8">
           <CardGrid columns={4}>
-            <CardStat label="Total Productos" value={totalProductos} icon="📦" />
-            <CardStat label="Stock Bajo (<5)" value={stockBajo} icon="⚠️" />
-            <CardStat label="Sin Stock" value={sinStock} icon="🚫" />
+            <Link
+              href="/productos"
+              className={`block ${!filter ? "ring-2 ring-primary" : ""}`}
+            >
+              <CardStat label="Total Productos" value={totalProductos} icon="📦" />
+            </Link>
+            <Link
+              href={filter === "low-stock" ? "/productos" : "/productos?filter=low-stock"}
+              className={`block ${filter === "low-stock" ? "ring-2 ring-primary" : ""}`}
+            >
+              <CardStat label="Stock Bajo (<5)" value={stockBajo} icon="⚠️" />
+            </Link>
+            <Link
+              href={filter === "out-of-stock" ? "/productos" : "/productos?filter=out-of-stock"}
+              className={`block ${filter === "out-of-stock" ? "ring-2 ring-primary" : ""}`}
+            >
+              <CardStat label="Sin Stock" value={sinStock} icon="🚫" />
+            </Link>
             <CardStat label="Valor Inventario" value={`$${valorInventario.toLocaleString()}`} icon="💰" />
           </CardGrid>
+        </div>
+      )}
+
+      {filter && (
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            {filter === "low-stock" && "Mostrando productos con stock bajo"}
+            {filter === "out-of-stock" && "Mostrando productos sin stock"}
+          </p>
+          <Link href="/productos" className="text-sm text-primary hover:underline">
+            Limpiar filtro
+          </Link>
         </div>
       )}
 
@@ -99,17 +136,18 @@ async function ProductosContent() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-              {productos.length === 0 ? (
+              {productosFiltrados.length === 0 ? (
                 <tr>
                   <td colSpan={isAdmin ? 7 : isAuth ? 6 : 5} className="px-4 py-12 text-center text-slate-500">
-                    {errorCarga 
-                      ? "No se pudieron cargar los productos. Revisá el error de arriba." 
-                      : `No hay productos.${isAdmin ? " Haz clic en Agregar Producto para crear uno." : ""}`
-                    }
+                    {errorCarga
+                      ? "No se pudieron cargar los productos. Revisá el error de arriba."
+                      : filter
+                      ? `No hay productos ${filter === "low-stock" ? "con stock bajo" : "sin stock"}.`
+                      : `No hay productos.${isAdmin ? " Haz clic en Agregar Producto para crear uno." : ""}`}
                   </td>
                 </tr>
               ) : (
-                productos.map((producto) => {
+                productosFiltrados.map((producto) => {
                   const precio = parseFloat(producto.precio_lista || producto.precio_oferta || producto.precio || "0");
                   const stock = producto.stock_total ?? 0;
                   return (
@@ -129,13 +167,13 @@ async function ProductosContent() {
                           </div>
                         </div>
                       </td>
-                      
+
                       {isAuth && (
                         <td className="px-4 py-4 text-center">
                           <BotonDeseo productoId={producto.id} />
                         </td>
                       )}
-                      
+
                       <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
                         {producto.categoria?.nombre || "—"}
                       </td>
@@ -154,7 +192,7 @@ async function ProductosContent() {
                           {stock}
                         </span>
                       </td>
-                      
+
                       {isAdmin && (
                         <td className="px-4 py-4 text-center">
                           <ProductoActions
@@ -177,10 +215,10 @@ async function ProductosContent() {
   );
 }
 
-export default function ProductosPage() {
+export default function ProductosPage({ searchParams }) {
   return (
     <Suspense fallback={<Cargando />}>
-      <ProductosContent />
+      <ProductosContent searchParams={searchParams} />
     </Suspense>
   );
 }
