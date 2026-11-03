@@ -7,7 +7,7 @@ import { BotonTema } from "@/components/BotonTema";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, logout, isAdmin, loading } = useAuth();
+  const { user, logout, isAdmin, isVendedor, loading } = useAuth();
 
   const navItems = [
     { href: "/productos", label: "Productos", icon: "📦" },
@@ -60,7 +60,7 @@ export function Sidebar() {
             ) : user ? (
               <div className="flex flex-col gap-3">
                 <p className="px-3 text-xs text-slate-500 dark:text-slate-400">
-                  👤 {user.username} <span className="font-bold text-brand">{isAdmin ? "(Administrador)" : "(Cliente)"}</span>
+                  👤 {user.username} <span className="font-bold text-brand">{isAdmin ? "(Administrador)" : isVendedor ? "(Vendedor)" : "(Cliente)"}</span>
                 </p>
                 <button
                   onClick={logout}

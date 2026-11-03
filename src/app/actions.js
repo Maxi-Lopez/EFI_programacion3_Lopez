@@ -70,6 +70,9 @@ export async function loginAction(formData) {
   const is_staff = payload.is_staff || false;
   const user_id = payload.user_id || payload.sub;
 
+  console.log(">>> PAYLOAD COMPLETO DEL JWT:", payload);
+  console.log(">>> ROL GUARDADO EN COOKIE:", role);
+
   (await cookies()).set("user_data", JSON.stringify({
     username,
     role,

@@ -119,10 +119,11 @@ export function AuthProvider({ children }) {
   };
 
   const isAdmin = user?.role === "admin" || user?.is_staff === true;
+  const isVendedor = user?.role === "vendedor";
   const isLoggedIn = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout, isAdmin, isLoggedIn, wishlist, toggleDeseo }}>
+    <AuthContext.Provider value={{ user, loading, logout, isAdmin, isVendedor, isLoggedIn, wishlist, toggleDeseo }}>
       {children}
     </AuthContext.Provider>
   );
