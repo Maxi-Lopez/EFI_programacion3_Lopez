@@ -20,8 +20,8 @@ export default function Cargando() {
       className="flex items-center justify-center gap-3 rounded-xl border border-line bg-white px-5 py-10 text-sm text-slate-500"
     >
       <span className="relative flex size-2 shrink-0" aria-hidden="true">
-        <span className="absolute inline-flex size-full rounded-full bg-brand/60 motion-safe:animate-ping" />
-        <span className="relative inline-flex size-2 rounded-full bg-brand" />
+        <span className="absolute inline-flex size-full rounded-full bg-primary/60 motion-safe:animate-ping" />
+        <span className="relative inline-flex size-2 rounded-full bg-primary" />
       </span>
       <span>{mensaje}</span>
       {seg >= 2 && (

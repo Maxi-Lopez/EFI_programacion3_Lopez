@@ -53,7 +53,7 @@ export default function ProductoActions({ producto, categorias, marcas, mode }) 
     <div className="flex items-center justify-center gap-2">
       <button
         onClick={() => handleOpenEdit(producto)}
-        className="p-1.5 rounded-lg text-slate-500 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-colors"
+        className="p-1.5 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
         aria-label="Editar"
         title="Editar"
       >

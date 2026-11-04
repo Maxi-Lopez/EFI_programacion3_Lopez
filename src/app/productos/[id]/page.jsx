@@ -43,7 +43,7 @@ export default async function ProductoPage({ params }) {
           <div className="space-y-4">
             <div>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Precio</p>
-              <p className="text-2xl font-bold text-brand">
+              <p className="text-2xl font-bold text-primary">
                 ${precio.toLocaleString("es-AR")}
               </p>
             </div>

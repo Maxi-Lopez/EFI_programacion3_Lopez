@@ -3,45 +3,46 @@
 @theme inline {
   --font-sans: var(--f-body), system-ui, sans-serif;
   --font-display: var(--f-head), system-ui, sans-serif;
-  --color-brand: #7c3aed;
-  --color-brand-dark: #5b21b6;
-  --color-brand-light: #ede9fe;
+  --color-primary: #4f46e5;
+  --color-primary-dark: #4338ca;
   --color-accent: #06b6d4;
-  --color-accent-dark: #0e7490;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
-  --color-ink: #0f0f1a;
+  --color-ink: #0f172a;
   --color-field: #f8fafc;
-  --color-line: #e2e8f0;
+  --color-border: #e2e8f0;
   --color-surface: #ffffff;
-  --color-primary: #7c3aed;
 }
 
 :root {
-  --color-ink: #0f0f1a;
+  --color-primary: #4f46e5;
+  --color-primary-dark: #4338ca;
+  --color-accent: #06b6d4;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-ink: #0f172a;
   --color-field: #f8fafc;
-  --color-line: #e2e8f0;
+  --color-border: #e2e8f0;
   --color-surface: #ffffff;
 }
 
 [data-theme="dark"] {
+  --color-primary: #6366f1;
+  --color-primary-dark: #4f46e5;
+  --color-accent: #22d3ee;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
   --color-ink: #f8fafc;
   --color-field: #0f172a;
-  --color-line: #1e293b;
+  --color-border: #334155;
   --color-surface: #1e293b;
-  --color-brand: #a78bfa;
-  --color-brand-dark: #8b5cf6;
-  --color-brand-light: #312e81;
-  --color-accent: #22d3ee;
-  --color-accent-dark: #06b6d4;
-  --color-success: #34d399;
-  --color-warning: #fbbf24;
-  --color-danger: #f87171;
 }
 
 * {
-  border-color: var(--color-line);
+  border-color: var(--color-border);
 }
 
 body {
@@ -58,23 +59,23 @@ body {
 }
 
 .border-line {
-  border-color: var(--color-line);
+  border-color: var(--color-border);
 }
 
-.bg-brand {
-  background-color: var(--color-brand);
+.bg-primary {
+  background-color: var(--color-primary);
 }
 
-.text-brand {
-  color: var(--color-brand);
+.text-primary {
+  color: var(--color-primary);
 }
 
-.bg-brand-light {
-  background-color: var(--color-brand-light);
+.bg-primary-dark {
+  background-color: var(--color-primary-dark);
 }
 
-.text-brand-dark {
-  color: var(--color-brand-dark);
+.text-primary-dark {
+  color: var(--color-primary-dark);
 }
 
 .bg-accent {
@@ -110,7 +111,11 @@ body {
 }
 
 .bg-surface {
-  background-color: var(--color-field);
+  background-color: var(--color-surface);
+}
+
+.text-surface {
+  color: var(--color-surface);
 }
 
 @layer utilities {
@@ -121,9 +126,12 @@ body {
     color: var(--color-ink);
   }
   .border-line {
-    border-color: var(--color-line);
+    border-color: var(--color-border);
   }
   .bg-surface {
-    background-color: var(--color-field);
+    background-color: var(--color-surface);
+  }
+  .text-surface {
+    color: var(--color-surface);
   }
 }

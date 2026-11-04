@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Toaster } from "sonner";
 
-const inputClass = "w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand focus:outline-2 focus:outline-brand/30";
+const inputClass = "w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:outline-2 focus:outline-primary/30";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -56,11 +56,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-field px-5">
+    <div className="relative min-h-screen overflow-hidden flex items-center justify-center bg-field px-5">
+      <div className="absolute inset-0 bg-gradient-to-br from-field via-field to-primary/5 dark:from-field dark:via-field dark:to-primary/10" />
       <Toaster position="top-right" />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-sm rounded-2xl border border-line bg-white p-8 shadow-sm"
+        className="relative z-10 w-full max-w-sm rounded-2xl border border-line bg-white/80 dark:bg-surface/80 backdrop-blur-sm p-8 shadow-sm"
       >
         <h1 className="font-display text-2xl font-semibold text-ink">Crear cuenta</h1>
         <p className="mb-6 mt-1 text-sm text-slate-500">Nexusgamer - Panel de administración</p>
@@ -185,7 +186,7 @@ export default function RegisterPage() {
         <button
           disabled={isSubmitting}
           type="submit"
-          className="mt-6 w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-60"
+          className="mt-6 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60"
         >
           {isSubmitting ? "Registrando..." : "Registrarse"}
         </button>
@@ -197,7 +198,7 @@ export default function RegisterPage() {
         )}
 
         <p className="mt-6 text-center text-sm text-slate-500">
-          ¿Ya tienes cuenta? <Link href="/login" className="text-brand hover:underline font-medium">Inicia sesión</Link>
+          ¿Ya tienes cuenta? <Link href="/login" className="text-primary hover:underline font-medium">Inicia sesión</Link>
         </p>
         <p className="mt-4 text-center text-sm text-slate-500">
           <Link href="/" className="text-slate-400 hover:text-slate-600 hover:underline">Cancelar</Link>

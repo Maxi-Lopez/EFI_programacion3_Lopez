@@ -207,7 +207,7 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
               setValue("categoria", "", { shouldValidate: true });
             }
           }}
-          className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+          className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
             ${errors.categoria ? "border-red-500 focus:ring-red-500" : "border-slate-300 dark:border-slate-600"}
             dark:bg-slate-800 dark:text-slate-100`}
           style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}
@@ -264,7 +264,7 @@ export function ProductoForm({ categorias = [], marcas = [], initialData, onSucc
               setValue("marca", "", { shouldValidate: true });
             }
           }}
-          className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+          className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
             ${errors.marca ? "border-red-500 focus:ring-red-500" : "border-slate-300 dark:border-slate-600"}
             dark:bg-slate-800 dark:text-slate-100`}
           style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-ink)' }}
