@@ -4,7 +4,6 @@ import { getProductos, getCategorias, getMarcas } from "@/lib/api";
 import { Card, CardStat, CardGrid } from "@/components/Card";
 import Link from "next/link";
 import { BotonDeseo } from "@/components/BotonDeseo";
-import Cargando from "@/components/Cargando";
 import ProductoActions from "@/components/ProductoActions";
 import { Buscador } from "@/components/Buscador";
 
@@ -222,9 +221,5 @@ async function ProductosContent({ searchParams }) {
 }
 
 export default function ProductosPage({ searchParams }) {
-  return (
-    <Suspense fallback={<Cargando />}>
-      <ProductosContent searchParams={searchParams} />
-    </Suspense>
-  );
+  return <ProductosContent searchParams={searchParams} />;
 }
