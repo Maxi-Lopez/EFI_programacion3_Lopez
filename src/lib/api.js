@@ -75,14 +75,15 @@ export const ENDPOINTS = {
   },
 };
 
-async function list(path) {
+async function list(path, params = {}) {
   const token = await getToken();
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
   let page = 1;
   let all = [];
   while (true) {
-    const res = await fetch(`${getApiUrl()}${path}?page=${page}`, { headers, cache: "no-store" });
+    const query = new URLSearchParams({ page: page.toString(), ...params }).toString();
+    const res = await fetch(`${getApiUrl()}${path}?${query}`, { headers, cache: "no-store" });
     if (!res.ok) throw new Error(`La API respondió ${res.status} en ${path}`);
     const data = await res.json();
     if (Array.isArray(data)) return data;
@@ -121,7 +122,7 @@ export const getListaDeseos = () => list(ENDPOINTS.read.usuarios.listaDeseos);
 // Catálogo
 export const getCategorias = () => list(ENDPOINTS.read.catalogo.categorias);
 export const getMarcas = () => list(ENDPOINTS.read.catalogo.marcas);
-export const getProductos = () => list(ENDPOINTS.read.catalogo.productos);
+export const getProductos = (search = "") => list(ENDPOINTS.read.catalogo.productos, { search });
 export const getProducto = (id) => request(ENDPOINTS.read.catalogo.productos + id + "/");
 
 // Proveedores

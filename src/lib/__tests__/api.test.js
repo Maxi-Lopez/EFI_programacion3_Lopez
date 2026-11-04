@@ -22,7 +22,7 @@ describe("API Library", () => {
     const { getProductos } = await import("@/lib/api");
     const result = await getProductos();
     expect(global.fetch).toHaveBeenCalledWith(
-      "http://127.0.0.1:8000/api/catalogo/producto-get/?page=1",
+      "http://127.0.0.1:8000/api/catalogo/producto-get/?page=1&search=",
       expect.objectContaining({ headers: expect.any(Object), cache: "no-store" })
     );
     expect(result).toEqual([{ id: 1, nombre: "Test" }]);

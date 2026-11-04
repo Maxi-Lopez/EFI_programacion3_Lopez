@@ -6,10 +6,12 @@ import Link from "next/link";
 import { BotonDeseo } from "@/components/BotonDeseo";
 import Cargando from "@/components/Cargando";
 import ProductoActions from "@/components/ProductoActions";
+import { Buscador } from "@/components/Buscador";
 
 async function ProductosContent({ searchParams }) {
   const params = await searchParams;
   const filter = params?.filter;
+  const searchQuery = params?.search || "";
 
   let productos = [];
   let categorias = [];
@@ -18,7 +20,7 @@ async function ProductosContent({ searchParams }) {
 
   try {
     const [prodData, catData, marData] = await Promise.all([
-      getProductos(),
+      getProductos(searchQuery),
       getCategorias(),
       getMarcas(),
     ]);
@@ -104,6 +106,10 @@ async function ProductosContent({ searchParams }) {
           </CardGrid>
         </div>
       )}
+
+      <Suspense fallback={<div className="mb-6 max-w-md animate-pulse"><div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-lg" /></div>}>
+        <Buscador initialSearch={searchQuery} className="mb-6" />
+      </Suspense>
 
       {filter && (
         <div className="mb-4 flex items-center justify-between">
