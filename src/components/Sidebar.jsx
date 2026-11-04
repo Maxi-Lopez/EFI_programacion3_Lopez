@@ -94,7 +94,7 @@ export function Sidebar() {
               ) : user ? (
                 <div className="flex flex-col gap-3">
                   <p className="px-3 text-xs text-slate-500 dark:text-slate-400">
-                    👤 {user.username} <span className="font-bold text-primary">{isAdmin ? "(Administrador)" : isVendedor ? "(Vendedor)" : "(Cliente)"}</span>
+                    👤 {user.username} <span className="font-bold text-brand">{isAdmin ? "(Administrador)" : isVendedor ? "(Vendedor)" : "(Cliente)"}</span>
                   </p>
                   <button
                     onClick={logout}
@@ -115,7 +115,7 @@ export function Sidebar() {
                   </Link>
                   <Link
                     href="/register"
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border-2 border-primary text-primary hover:bg-primary/10 transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary/90 transition-colors"
                   >
                     <span>📝</span>
                     Registrarse

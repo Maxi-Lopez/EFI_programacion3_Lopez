@@ -1,46 +1,46 @@
 @import "tailwindcss";
 
+/* ==========================================
+   PALETA DE COLORES - NEXUSGAMER
+   ========================================== */
 @theme inline {
   --font-sans: var(--f-body), system-ui, sans-serif;
   --font-display: var(--f-head), system-ui, sans-serif;
-  --color-primary: #4f46e5;
+  
+  /* Colores base (Modo Claro) */
+  --color-primary: #4f46e5;      /* Azul Índigo */
   --color-primary-dark: #4338ca;
-  --color-accent: #06b6d4;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-ink: #0f172a;
-  --color-field: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-surface: #ffffff;
+  --color-accent: #06b6d4;       /* Cian brillante */
+  --color-success: #10b981;      /* Esmeralda */
+  --color-warning: #f59e0b;      /* Ámbar */
+  --color-danger: #ef4444;       /* Rojo */
+  
+  --color-ink: #0f172a;          /* Texto principal (Slate 900) */
+  --color-field: #f8fafc;        /* Fondo principal (Slate 50) */
+  --color-border: #e2e8f0;       /* Bordes (Slate 200) */
+  --color-surface: #ffffff;      /* Tarjetas y modales (Blanco) */
 }
 
-:root {
-  --color-primary: #4f46e5;
-  --color-primary-dark: #4338ca;
-  --color-accent: #06b6d4;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-ink: #0f172a;
-  --color-field: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-surface: #ffffff;
-}
-
+/* ==========================================
+   MODO OSCURO
+   ========================================== */
 [data-theme="dark"] {
-  --color-primary: #6366f1;
+  --color-primary: #6366f1;      /* Índigo más brillante para oscuro */
   --color-primary-dark: #4f46e5;
-  --color-accent: #22d3ee;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-ink: #f8fafc;
-  --color-field: #0f172a;
-  --color-border: #334155;
-  --color-surface: #1e293b;
+  --color-accent: #22d3ee;       /* Cian neón para oscuro */
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  
+  --color-ink: #f8fafc;          /* Texto principal (Slate 50) */
+  --color-field: #0f172a;        /* Fondo principal (Slate 900) */
+  --color-border: #334155;       /* Bordes (Slate 700) */
+  --color-surface: #1e293b;      /* Tarjetas y modales (Slate 800) */
 }
 
+/* ==========================================
+   ESTILOS GLOBALES
+   ========================================== */
 * {
   border-color: var(--color-border);
 }
@@ -48,90 +48,78 @@
 body {
   background-color: var(--color-field);
   color: var(--color-ink);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.bg-field {
-  background-color: var(--color-field);
-}
-
-.text-ink {
-  color: var(--color-ink);
-}
-
-.border-line {
-  border-color: var(--color-border);
-}
-
-.bg-primary {
-  background-color: var(--color-primary);
-}
-
-.text-primary {
-  color: var(--color-primary);
-}
-
-.bg-primary-dark {
-  background-color: var(--color-primary-dark);
-}
-
-.text-primary-dark {
-  color: var(--color-primary-dark);
-}
-
-.bg-accent {
-  background-color: var(--color-accent);
-}
-
-.text-accent {
-  color: var(--color-accent);
-}
-
-.bg-success {
-  background-color: var(--color-success);
-}
-
-.text-success {
-  color: var(--color-success);
-}
-
-.bg-warning {
-  background-color: var(--color-warning);
-}
-
-.text-warning {
-  color: var(--color-warning);
-}
-
-.bg-danger {
-  background-color: var(--color-danger);
-}
-
-.text-danger {
-  color: var(--color-danger);
-}
-
-.bg-surface {
-  background-color: var(--color-surface);
-}
-
-.text-surface {
-  color: var(--color-surface);
-}
-
+/* ==========================================
+   CLASES UTILITARIAS PERSONALIZADAS
+   ========================================== */
 @layer utilities {
   .bg-field {
     background-color: var(--color-field);
   }
+  
   .text-ink {
     color: var(--color-ink);
   }
+  
   .border-line {
     border-color: var(--color-border);
   }
+  
   .bg-surface {
     background-color: var(--color-surface);
   }
+  
   .text-surface {
     color: var(--color-surface);
+  }
+  
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+  
+  .text-primary {
+    color: var(--color-primary);
+  }
+  
+  .bg-primary-dark {
+    background-color: var(--color-primary-dark);
+  }
+  
+  .text-primary-dark {
+    color: var(--color-primary-dark);
+  }
+  
+  .bg-accent {
+    background-color: var(--color-accent);
+  }
+  
+  .text-accent {
+    color: var(--color-accent);
+  }
+  
+  .bg-success {
+    background-color: var(--color-success);
+  }
+  
+  .text-success {
+    color: var(--color-success);
+  }
+  
+  .bg-warning {
+    background-color: var(--color-warning);
+  }
+  
+  .text-warning {
+    color: var(--color-warning);
+  }
+  
+  .bg-danger {
+    background-color: var(--color-danger);
+  }
+  
+  .text-danger {
+    color: var(--color-danger);
   }
 }

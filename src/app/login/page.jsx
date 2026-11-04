@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Toaster } from "sonner";
 
-const inputClass = "w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:outline-2 focus:outline-primary/30";
+const inputClass = "w-full rounded-lg border border-line bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-primary focus:outline-2 focus:outline-primary/30";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -50,13 +50,13 @@ export default function LoginPage() {
       <Toaster position="top-right" />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="relative z-10 w-full max-w-sm rounded-2xl border border-line bg-white/80 dark:bg-surface/80 backdrop-blur-sm p-8 shadow-sm"
+        className="relative z-10 w-full max-w-sm rounded-2xl border border-line bg-surface/80 backdrop-blur-sm p-8 shadow-sm"
       >
-        <h1 className="font-display text-2xl font-semibold text-ink">Iniciar sesión</h1>
-        <p className="mb-6 mt-1 text-sm text-slate-500">Nexusgamer - Panel de administración</p>
+        <h1 className="font-display text-2xl font-semibold text-slate-900 dark:text-white">Iniciar sesión</h1>
+        <p className="mb-6 mt-1 text-sm text-slate-500 dark:text-slate-400">Nexusgamer - Panel de administración</p>
 
         <div className="grid gap-4">
-          <label className="grid gap-1.5 text-sm font-medium text-slate-700">
+          <label className="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
             Usuario
             <input
               {...register("username")}
@@ -69,11 +69,11 @@ export default function LoginPage() {
               disabled={isSubmitting}
             />
             {errors.username && (
-              <p className="text-xs text-red-700" role="alert">{errors.username[0]}</p>
+              <p className="text-xs text-red-700 dark:text-red-400" role="alert">{errors.username[0]}</p>
             )}
           </label>
 
-          <label className="grid gap-1.5 text-sm font-medium text-slate-700">
+          <label className="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300">
             Contraseña
             <input
               {...register("password")}
@@ -85,13 +85,13 @@ export default function LoginPage() {
               disabled={isSubmitting}
             />
             {errors.password && (
-              <p className="text-xs text-red-700" role="alert">{errors.password[0]}</p>
+              <p className="text-xs text-red-700 dark:text-red-400" role="alert">{errors.password[0]}</p>
             )}
           </label>
         </div>
 
         {apiError && (
-          <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
+          <p role="alert" className="mt-4 rounded-lg bg-red-50 dark:bg-red-900/20 px-3 py-2 text-sm text-red-800 dark:text-red-400">
             {apiError}
           </p>
         )}
@@ -105,16 +105,16 @@ export default function LoginPage() {
         </button>
 
         {isSubmitting && (
-          <p className="mt-3 text-center text-xs text-slate-400">
+          <p className="mt-3 text-center text-xs text-slate-400 dark:text-slate-500">
             Si la API estaba dormida, puede tardar hasta un minuto.
           </p>
         )}
 
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
           ¿No tienes cuenta? <Link href="/register" className="text-primary hover:underline font-medium">Regístrate</Link>
         </p>
-        <p className="mt-4 text-center text-sm text-slate-500">
-          <Link href="/" className="text-slate-400 hover:text-slate-600 hover:underline">Cancelar</Link>
+        <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+          <Link href="/" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 hover:underline">Cancelar</Link>
         </p>
       </form>
     </div>
