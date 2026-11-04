@@ -127,6 +127,7 @@ export const getProducto = (id) => request(ENDPOINTS.read.catalogo.productos + i
 
 // Proveedores
 export const getProveedores = () => list(ENDPOINTS.read.proveedores.proveedores);
+export const getProveedor = (id) => request(ENDPOINTS.read.proveedores.proveedores + id + "/");
 
 // Compras y Ventas
 export const getCompras = () => list(ENDPOINTS.read.compras.compras);

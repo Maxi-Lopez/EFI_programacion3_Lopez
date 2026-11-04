@@ -18,7 +18,7 @@ export default function SobreNosotrosPage() {
           <div className="bg-surface border border-border rounded-xl p-8">
             <h2 className="font-display text-2xl font-semibold text-ink mb-4">Nuestra Historia</h2>
             <p className="mb-4">
-              Nexusgamer nació en 2020 de la pasión compartida por la tecnología y los videojuegos.
+              Nexusgamer nació en 2026 de la pasión compartida por la tecnología y los videojuegos.
               Lo que comenzó como un pequeño emprendimiento entre amigos apasionados por armar PCs,
               hoy es una tienda de referencia para quienes buscan componentes de calidad, asesoramiento
               honesto y una experiencia de compra pensada por y para gamers.
