@@ -18,39 +18,23 @@ export default function SobreNosotrosPage() {
           <div className="bg-surface border border-border rounded-xl p-8">
             <h2 className="font-display text-2xl font-semibold text-ink mb-4">Nuestra Historia</h2>
             <p className="mb-4">
-              Nexusgamer nació en 2026 de la pasión compartida por la tecnología y los videojuegos.
-              Lo que comenzó como un pequeño emprendimiento entre amigos apasionados por armar PCs,
-              hoy es una tienda de referencia para quienes buscan componentes de calidad, asesoramiento
-              honesto y una experiencia de compra pensada por y para gamers.
-            </p>
-            <p className="mb-4">
-              Entendemos que cada build es única: desde la estación de trabajo para desarrollo
-              hasta la máquina definitiva para gaming competitivo en 4K. Por eso curamos un catálogo
-              con las mejores marcas, stock real y precios competitivos, respaldados por garantía oficial.
+              Nexusgamer nació como un proyecto de la facultad (EFI de Programación III) con la idea de crear una tienda de computación y gaming que sea rápida, segura y fácil de usar.
             </p>
           </div>
 
           <div className="bg-surface border border-border rounded-xl p-8">
             <h2 className="font-display text-2xl font-semibold text-ink mb-4">Nuestra Misión</h2>
             <p className="mb-4">
-              Democratizar el acceso a hardware de alto rendimiento en Argentina, ofreciendo no solo
-              productos, sino el conocimiento necesario para que cada cliente tome la mejor decisión
-              según su uso y presupuesto.
-            </p>
-            <p className="mb-4">
-              Creemos que el soporte técnico no termina en la venta. Nuestro equipo está disponible
-              para asesorar en la compatibilidad de componentes, resolver dudas de armado y brindar
-              soporte post-venta real, porque sabemos que la confianza se construye con hechos.
+              Ofrecer componentes de alta calidad (procesadores, placas de video, periféricos) con un enfoque en la experiencia del usuario y la transparencia en los precios.
             </p>
           </div>
 
           <div className="bg-surface border border-border rounded-xl p-8">
             <h2 className="font-display text-2xl font-semibold text-ink mb-4">Valores</h2>
             <ul className="space-y-3 list-disc list-inside">
-              <li><strong className="text-ink">Transparencia:</strong> Stock real, precios claros, sin letras chicas.</li>
-              <li><strong className="text-ink">Calidad:</strong> Solo trabajamos con distribuidores oficiales y marcas de primer nivel.</li>
-              <li><strong className="text-ink">Comunidad:</strong> Escuchamos a nuestros clientes y mejoramos continuamente.</li>
-              <li><strong className="text-ink">Pasión:</strong> Somos gamers, desarrolladores y entusiastas. Hablamos tu idioma.</li>
+              <li><strong className="text-ink">Calidad:</strong> Solo trabajamos con marcas reconocidas como Asus, MSI, etc.</li>
+              <li><strong className="text-ink">Rapidez:</strong> Envíos en 24hs.</li>
+              <li><strong className="text-ink">Soporte:</strong> Atención personalizada.</li>
             </ul>
           </div>
         </div>
@@ -61,6 +45,10 @@ export default function SobreNosotrosPage() {
               Volver a Productos
             </Boton>
           </Link>
+        </div>
+
+        <div className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+          <p>Desarrollado por Maximiliano López para el Examen Final Integrador de Programación III</p>
         </div>
       </div>
     </main>
